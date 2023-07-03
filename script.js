@@ -5,6 +5,8 @@ let cellBuffer = 5;
 class Member {
   constructor(name, x, y, w, h) {
     this.name = name;
+    this.originalX = x;
+    this.originalY = y;
     this.x = x;
     this.y = y;
     this.w = w;
@@ -29,20 +31,33 @@ class Member {
   }
 
   show() {
+    this.showOriginal();
+    strokeWeight(1);
     if (this.dragging) {
       stroke(200, 0, 0);
-    } else if (this.rollover) {
+    } else if (this.rollover || this.checkMouseOverOriginal()) {
       stroke(200, 200, 0);
+      strokeWeight(3);
     } else {
       stroke(200);
     }
-    strokeWeight(1);
+
     fill(255);
     rect(this.x, this.y, this.w, this.h);
     fill(0);
     noStroke();
     textAlign(LEFT, CENTER);
     text(this.name, this.x + 5, this.y + this.h / 2);
+  }
+
+  showOriginal() {
+    fill(200); // light grey
+    noStroke();
+    rect(this.originalX, this.originalY, this.w, this.h);
+    fill(0); // black text
+    noStroke();
+    textAlign(LEFT, CENTER);
+    text(this.name, this.originalX + 5, this.originalY + this.h / 2);
   }
 
   checkMouseOver() {
@@ -59,6 +74,15 @@ class Member {
       this.rollover = false;
       return false;
     }
+  }
+
+  checkMouseOverOriginal() {
+    return (
+      mouseX > this.originalX &&
+      mouseX < this.originalX + this.w &&
+      mouseY > this.originalY &&
+      mouseY < this.originalY + this.h
+    );
   }
 }
 
@@ -149,7 +173,7 @@ class Group {
           )
       );
   }
-  
+
   show() {
     this.showTitle();
     for (let seat of this.seats) {
@@ -157,7 +181,7 @@ class Group {
       seat.checkMouseOver();
     }
   }
-  
+
   showTitle() {
     fill(0);
     noStroke();
@@ -173,23 +197,18 @@ class EnrollmentSystem {
     this.draggingMember = null;
   }
 
-    createGroups(groups) {
+  createGroups(groups) {
     let initialX = 200;
     let initialY = 50;
     let xOffset = cellWidth + cellBuffer * 3;
 
     for (let group of groups) {
-      let newGroup = new Group(
-        group.name,
-        group.maxSize,
-        initialX,
-        initialY
-      );
+      let newGroup = new Group(group.name, group.maxSize, initialX, initialY);
       this.addGroup(newGroup);
       initialX += xOffset;
     }
   }
-  
+
   addGroup(group) {
     this.groups.push(group);
   }
@@ -278,7 +297,7 @@ function setup() {
     { name: "Chess", maxSize: 10 },
   ];
   system.createGroups(groups);
-  
+
   let people = [{ name: "Alice" }, { name: "Bert" }];
   system.createMembers(people);
 }
