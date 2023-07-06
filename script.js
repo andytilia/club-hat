@@ -1,9 +1,15 @@
 let cellWidth = 100;
 let cellHeight = 30;
 let cellBuffer = 5;
+let groupData;
+let memberData;
 
+function preload() {
+  groupData = loadTable("groups.csv", "header");
+  memberData = loadTable("members.csv", "header");
+}
 class Member {
-  constructor(name, x, y, w, h) {
+  constructor(name, x, y, w, h, preferences) {
     this.name = name;
     this.originalX = x;
     this.originalY = y;
@@ -13,6 +19,7 @@ class Member {
     this.h = h;
     this.dragging = false;
     this.rollover = false;
+    this.preferences = preferences; // Add this line
   }
 
   startDragging() {
@@ -35,7 +42,7 @@ class Member {
     strokeWeight(1);
     if (this.dragging) {
       stroke(200, 0, 0);
-    } else if (this.rollover || this.checkMouseOverOriginal()) {
+    } else if (system.getFocusedMember() !== undefined && system.getFocusedMember().name === this.name) {
       stroke(200, 200, 0);
       strokeWeight(3);
     } else {
@@ -175,19 +182,28 @@ class Group {
   }
 
   show() {
-    this.showTitle();
     for (let seat of this.seats) {
       seat.show();
       seat.checkMouseOver();
     }
   }
-
-  showTitle() {
-    fill(0);
-    noStroke();
-    textAlign(LEFT, BOTTOM);
-    text(this.name, this.x, this.y - 5);
+  
+showTitle() {
+  fill(0);
+  noStroke();
+  textAlign(LEFT, BOTTOM);
+  let focusedMember = system.getFocusedMember();
+  if (
+    focusedMember &&
+    focusedMember.preferences.includes(this.name)
+  ) {
+    stroke(200, 200, 0);
+    strokeWeight(2);
+    fill(50, 50, 0);
   }
+  text(this.name, this.x, this.y - 5);
+}
+
 }
 
 class EnrollmentSystem {
@@ -202,34 +218,46 @@ class EnrollmentSystem {
     let initialY = 50;
     let xOffset = cellWidth + cellBuffer * 3;
 
-    for (let group of groups) {
-      let newGroup = new Group(group.name, group.maxSize, initialX, initialY);
-      this.addGroup(newGroup);
-      initialX += xOffset;
-    }
+  groups.rows.forEach(row => {
+    let groupName = row.getString("name");
+    let groupMaxSize = row.getNum("maxSize");
+
+    let newGroup = new Group(groupName, groupMaxSize, initialX, initialY);
+    this.addGroup(newGroup);
+    initialX += xOffset;
+  });
   }
 
   addGroup(group) {
     this.groups.push(group);
   }
 
-  createMembers(persons) {
-    let initialX = 50;
-    let initialY = 50;
-    let yOffset = cellHeight + cellBuffer;
+  getRolloverMember() {
+  return this.members.find(member => member.checkMouseOver() || member.checkMouseOverOriginal());
+}
+  
+createMembers(newMembers) {
+  let initialX = 50;
+  let initialY = 50;
+  let yOffset = cellHeight + cellBuffer;
 
-    for (let person of persons) {
-      let newMember = new Member(
-        person.name,
-        initialX,
-        initialY,
-        cellWidth,
-        cellHeight
-      );
-      this.addMember(newMember);
-      initialY += yOffset;
-    }
-  }
+newMembers.rows.forEach(row => {
+  let memberName = row.getString("name");
+  let memberPreferences = row.getString("preferences").split("|");
+
+  let newMember = new Member(
+    memberName,
+    initialX,
+    initialY,
+    cellWidth,
+    cellHeight,
+    memberPreferences
+  );
+  this.addMember(newMember);
+  initialY += yOffset;
+});
+
+}
 
   addMember(member) {
     this.members.push(member);
@@ -271,6 +299,15 @@ class EnrollmentSystem {
   getDraggingMember() {
     return this.draggingMember;
   }
+  
+  getFocusedMember() {
+    const draggingMember = this.getDraggingMember();
+    if (draggingMember !== null) {
+      return draggingMember
+    } else {
+      return this.getRolloverMember();
+    }
+  }
   displayEnrollments(x, y) {
     let yOffset = 0;
     textSize(14);
@@ -291,31 +328,26 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
 
   system = new EnrollmentSystem();
-
-  let groups = [
-    { name: "Basketball", maxSize: 16 },
-    { name: "Chess", maxSize: 10 },
-  ];
-  system.createGroups(groups);
-
-  let people = [{ name: "Alice" }, { name: "Bert" }];
-  system.createMembers(people);
+  system.createGroups(groupData);
+  system.createMembers(memberData);
 }
 
 function draw() {
   background(255);
 
-  for (let group of system.groups) {
+  // Show each group and check for mouse over
+  system.groups.forEach((group) => {
     group.show();
-  }
+    group.showTitle();
+  });
 
-  for (let member of system.members) {
+  // Show each member and check for mouse over or move if it's being dragged
+  system.members.forEach((member) => {
     member.show();
-    member.checkMouseOver();
     if (member.dragging) {
       member.move(mouseX, mouseY);
     }
-  }
+  });
 }
 
 function mousePressed() {
