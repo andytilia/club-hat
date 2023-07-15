@@ -1,10 +1,13 @@
-class Member {
-  constructor(name, x, y, w, h, preferences) {
+export default class Member {
+  constructor(system, name, x, y, w, h, preferences) {
+    this.system = system;
     this.name = name;
     this.originalX = x;
     this.originalY = y;
     this.x = x;
     this.y = y;
+    this.offsetX = 0;
+    this.offsetY = 0;
     this.w = w;
     this.h = h;
     this.dragging = false;
@@ -14,61 +17,66 @@ class Member {
 
   startDragging() {
     this.dragging = true;
+    this.offsetX = this.system.p5.mouseX - this.x;
+    this.offsetY = this.system.p5.mouseY - this.y;
   }
 
   stopDragging() {
     this.dragging = false;
   }
 
-  move(x, y) {
+  move() {
     if (this.dragging) {
-      this.x = x - this.w / 2; // adjusting so that mouse is at the center of the member rectangle
-      this.y = y - this.h / 2; // adjusting so that mouse is at the center of the member rectangle
+      this.x = this.system.p5.mouseX - this.offsetX;
+      this.y = this.system.p5.mouseY - this.offsetY;
     }
   }
 
   show() {
+    const p5 = this.system.p5;
     this.showOriginal();
-    strokeWeight(1);
+    p5.strokeWeight(1);
     if (this.dragging) {
-      stroke(200, 0, 0);
+      p5.stroke(200, 0, 0);
     } else if (
-      system.getFocusedMember() !== undefined &&
-      system.getFocusedMember().name === this.name
+      this.system.getFocusedMember() !== undefined &&
+      this.system.getFocusedMember().name === this.name
     ) {
-      stroke(200, 200, 0);
-      strokeWeight(3);
+      p5.stroke(200, 200, 0);
+      p5.strokeWeight(3);
     } else {
-      stroke(200);
+      p5.stroke(200);
     }
 
-    fill(255);
-    rect(this.x, this.y, this.w, this.h);
-    fill(0);
-    noStroke();
-    textAlign(LEFT, CENTER);
-    text(this.name, this.x + 5, this.y + this.h / 2);
+    p5.fill(255);
+    p5.rect(this.x, this.y, this.w, this.h);
+    p5.fill(0);
+    p5.noStroke();
+    p5.textAlign(p5.LEFT, p5.CENTER);
+    p5.text(this.name, this.x + 5, this.y + this.h / 2);
   }
 
   showOriginal() {
-    fill(200); // light grey
-    noStroke();
-    rect(this.originalX, this.originalY, this.w, this.h);
-    fill(0); // black text
-    noStroke();
-    textAlign(LEFT, CENTER);
-    text(this.name, this.originalX + 5, this.originalY + this.h / 2);
+    const p5 = this.system.p5;
+    p5.fill(200); // light grey
+    p5.noStroke();
+    p5.rect(this.originalX, this.originalY, this.w, this.h);
+    p5.fill(0); // black text
+    p5.noStroke();
+    p5.textAlign(p5.LEFT, p5.CENTER);
+    p5.text(this.name, this.originalX + 5, this.originalY + this.h / 2);
   }
 
-  checkMouseOver() {
+  isMouseOver() {
+    const p5 = this.system.p5;
     if (
-      mouseX > this.x &&
-      mouseX < this.x + this.w &&
-      mouseY > this.y &&
-      mouseY < this.y + this.h
+      p5.mouseX > this.x &&
+      p5.mouseX < this.x + this.w &&
+      p5.mouseY > this.y &&
+      p5.mouseY < this.y + this.h
     ) {
       // Only consider this member as rolled over if no other member is being dragged
-      this.rollover = system.getDraggingMember() === null;
+      this.rollover = this.system.getDraggingMember() === null;
       return this.rollover;
     } else {
       this.rollover = false;
@@ -76,12 +84,13 @@ class Member {
     }
   }
 
-  checkMouseOverOriginal() {
+  isMouseOverOriginal() {
+    const p5 = this.system.p5;
     return (
-      mouseX > this.originalX &&
-      mouseX < this.originalX + this.w &&
-      mouseY > this.originalY &&
-      mouseY < this.originalY + this.h
+      p5.mouseX > this.originalX &&
+      p5.mouseX < this.originalX + this.w &&
+      p5.mouseY > this.originalY &&
+      p5.mouseY < this.originalY + this.h
     );
   }
 }

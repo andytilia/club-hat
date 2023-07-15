@@ -1,20 +1,36 @@
-class EnrollmentSystem {
-  constructor() {
+import Group from "./Group.js";
+import Member from "./Member.js";
+
+export default class EnrollmentSystem {
+  constructor(p5, cellWidth, cellHeight, cellBuffer) {
+    this.p5 = p5;
     this.groups = [];
     this.members = [];
     this.draggingMember = null;
+    this.cellWidth = cellWidth;
+    this.cellHeight = cellHeight;
+    this.cellBuffer = cellBuffer;
   }
 
   createGroups(groups) {
     let initialX = 200;
     let initialY = 50;
-    let xOffset = cellWidth + cellBuffer * 3;
+    let xOffset = this.cellWidth + this.cellBuffer * 3;
 
     groups.rows.forEach((row) => {
       let groupName = row.getString("name");
       let groupMaxSize = row.getNum("maxSize");
 
-      let newGroup = new Group(groupName, groupMaxSize, initialX, initialY);
+      let newGroup = new Group(
+        this,
+        groupName,
+        groupMaxSize,
+        initialX,
+        initialY,
+        this.cellHeight,
+        this.cellWidth,
+        this.cellBuffer
+      );
       this.addGroup(newGroup);
       initialX += xOffset;
     });
@@ -26,29 +42,30 @@ class EnrollmentSystem {
 
   getRolloverMember() {
     return this.members.find(
-      (member) => member.checkMouseOver() || member.checkMouseOverOriginal()
+      (member) => member.isMouseOver() || member.isMouseOverOriginal()
     );
   }
 
   createMembers(newMembers) {
-    let initialX = 50;
-    let initialY = 50;
-    let yOffset = cellHeight + cellBuffer;
+    let x = 50;
+    let y = 50;
+    let yOffset = this.cellHeight + this.cellBuffer;
 
     newMembers.rows.forEach((row) => {
       let memberName = row.getString("name");
       let memberPreferences = row.getString("preferences").split("|");
 
       let newMember = new Member(
+        this,
         memberName,
-        initialX,
-        initialY,
-        cellWidth,
-        cellHeight,
+        x,
+        y,
+        this.cellWidth,
+        this.cellHeight,
         memberPreferences
       );
       this.addMember(newMember);
-      initialY += yOffset;
+      y += yOffset;
     });
   }
 
@@ -76,9 +93,9 @@ class EnrollmentSystem {
     }
   }
 
-  moveMember(x, y) {
+  moveMember() {
     if (this.draggingMember) {
-      this.draggingMember.move(x, y);
+      this.draggingMember.move();
     }
   }
 

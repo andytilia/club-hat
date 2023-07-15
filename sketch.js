@@ -1,49 +1,55 @@
+import Seat from "./Seat.js";
+import EnrollmentSystem from "./EnrollmentSystem.js";
+
 let cellWidth = 100;
 let cellHeight = 30;
 let cellBuffer = 5;
 let groupData;
 let memberData;
+let system;
 
-function preload() {
-  groupData = loadTable("groups.csv", "header");
-  memberData = loadTable("members.csv", "header");
-}
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  system = new EnrollmentSystem();
-  system.createGroups(groupData);
-  system.createMembers(memberData);
-}
+const sketch = (p5) => {
+  p5.preload = () => {
+    groupData = p5.loadTable("groups.csv", "header");
+    memberData = p5.loadTable("members.csv", "header");
+  };
 
-function draw() {
-  background(255);
+  p5.setup = () => {
+    p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    system = new EnrollmentSystem(p5, cellWidth, cellHeight, cellBuffer);
+    system.createGroups(groupData);
+    system.createMembers(memberData);
+  };
 
-  // Show each group and check for mouse over
-  system.groups.forEach((group) => {
-    group.show();
-    group.showTitle();
-  });
+  p5.draw = () => {
+    p5.background(210);
 
-  // Show each member and check for mouse over or move if it's being dragged
-  system.members.forEach((member) => {
-    member.show();
-    if (member.dragging) {
-      member.move(mouseX, mouseY);
+    system.groups.forEach((group) => {
+      group.show();
+      group.showTitle();
+    });
+
+    system.members.forEach((member) => {
+      member.show();
+      if (member.dragging) {
+        member.move();
+      }
+    });
+  };
+  p5.mousePressed = () => {
+    // If a member was clicked, start dragging it
+    for (let member of system.members) {
+      if (member.isMouseOver()) {
+        system.startDraggingMember(member);
+        break;
+      }
     }
-  });
-}
+  };
 
-function mousePressed() {
-  // If a member was clicked, start dragging it
-  for (let member of system.members) {
-    if (member.checkMouseOver()) {
-      system.startDraggingMember(member);
-      break;
-    }
-  }
-}
+  p5.mouseReleased = () => {
+    system.releaseMembers();
+    system.stopDraggingMember();
+  };
+};
 
-function mouseReleased() {
-  system.releaseMembers();
-  system.stopDraggingMember();
-}
+const myp5 = new p5(sketch, "enroll");
