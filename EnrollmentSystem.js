@@ -76,6 +76,8 @@ export default class EnrollmentSystem {
   startDraggingMember(member) {
     this.draggingMember = member;
     member.startDragging();
+
+    // unassigned member from its seat
     for (let group of this.groups) {
       for (let seat of group.seats) {
         if (seat.member === member) {
@@ -83,6 +85,16 @@ export default class EnrollmentSystem {
           break;
         }
       }
+    }
+
+    this.showMemberOnTop(member);
+  }
+
+  showMemberOnTop(member) {
+    const index = this.members.findIndex((obj) => obj["name"] === member.name);
+    if (index > -1) {
+      const item = this.members.splice(index, 1)[0];
+      this.members.push(item);
     }
   }
 
