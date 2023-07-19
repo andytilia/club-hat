@@ -9,6 +9,10 @@ export default class Group {
     this.seats = this.createSeats(seatCount);
   }
 
+  getMembers() {
+    return this.seats.map((seat) => seat.member);
+  }
+
   createSeats(count) {
     const seats = Array(count)
       .fill()

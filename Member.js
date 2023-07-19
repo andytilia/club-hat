@@ -12,7 +12,7 @@ export default class Member {
     this.h = h;
     this.dragging = false;
     this.rollover = false;
-    this.preferences = preferences; // Add this line
+    this.preferences = preferences;
   }
 
   startDragging() {
@@ -54,6 +54,9 @@ export default class Member {
     p5.noStroke();
     p5.textAlign(p5.LEFT, p5.CENTER);
     p5.text(this.name, this.x + 5, this.y + this.h / 2);
+
+    p5.textAlign(p5.RIGHT, p5.CENTER);
+    p5.text(this.getHappiness(), this.x + this.w - 5, this.y + this.h / 2);
   }
 
   showOriginal() {
@@ -65,6 +68,13 @@ export default class Member {
     p5.noStroke();
     p5.textAlign(p5.LEFT, p5.CENTER);
     p5.text(this.name, this.originalX + 5, this.originalY + this.h / 2);
+
+    p5.textAlign(p5.RIGHT, p5.CENTER);
+    p5.text(
+      this.getHappiness(),
+      this.originalX + this.w - 5,
+      this.originalY + this.h / 2
+    );
   }
 
   isMouseOver() {
@@ -75,7 +85,6 @@ export default class Member {
       p5.mouseY > this.y &&
       p5.mouseY < this.y + this.h
     ) {
-      // Only consider this member as rolled over if no other member is being dragged
       this.rollover = this.system.getDraggingMember() === null;
       return this.rollover;
     } else {
@@ -92,5 +101,31 @@ export default class Member {
       p5.mouseY > this.originalY &&
       p5.mouseY < this.originalY + this.h
     );
+  }
+
+  getGroup() {
+    return (
+      this.system.groups.find((group) =>
+        group.seats.some((seat) => seat.member === this)
+      ) || null
+    );
+  }
+
+  getHappiness() {
+    if (this.preferences.length === 0) {
+      return "";
+    }
+
+    const group = this.getGroup();
+    if (group === null) {
+      return "?";
+    }
+
+    const index = this.preferences.indexOf(group.name);
+    if (index >= 0) {
+      return index + 1;
+    }
+
+    return "X";
   }
 }

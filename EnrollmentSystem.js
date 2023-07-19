@@ -53,8 +53,11 @@ export default class EnrollmentSystem {
 
     newMembers.rows.forEach((row) => {
       let memberName = row.getString("name");
-      let memberPreferences = row.getString("preferences").split("|");
 
+      let preferencesString = row.getString("preferences").trim();
+      let preferencesList =
+        preferencesString.length > 0 ? preferencesString.split("|") : [];
+      console.log(preferencesList);
       let newMember = new Member(
         this,
         memberName,
@@ -62,7 +65,7 @@ export default class EnrollmentSystem {
         y,
         this.cellWidth,
         this.cellHeight,
-        memberPreferences
+        preferencesList
       );
       this.addMember(newMember);
       y += yOffset;
@@ -111,13 +114,15 @@ export default class EnrollmentSystem {
     }
   }
 
-  releaseMembers() {
+  onMouseReleased() {
     for (let group of this.groups) {
       for (let seat of group.seats) {
-        seat.released(this.draggingMember);
+        seat.onMouseReleased(this.draggingMember);
       }
     }
+    this.stopDraggingMember();
   }
+
   getDraggingMember() {
     return this.draggingMember;
   }

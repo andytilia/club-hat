@@ -58,15 +58,13 @@ export default class Seat {
     }
   }
 
-  released() {
+  onMouseReleased() {
     if (
       this.rollover &&
       this.member === null &&
       this.system.getDraggingMember() !== null
     ) {
-      this.member = this.system.getDraggingMember();
-      this.member.x = this.x;
-      this.member.y = this.y;
+      this.assignMember(this.system.getDraggingMember());
       this.system.stopDraggingMember();
     }
   }

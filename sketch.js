@@ -1,4 +1,3 @@
-import Seat from "./Seat.js";
 import EnrollmentSystem from "./EnrollmentSystem.js";
 
 let cellWidth = 100;
@@ -47,8 +46,7 @@ const sketch = (p5) => {
   };
 
   p5.mouseReleased = () => {
-    system.releaseMembers();
-    system.stopDraggingMember();
+    system.onMouseReleased();
   };
 };
 
