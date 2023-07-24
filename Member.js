@@ -145,7 +145,6 @@ export default class Member {
     if (!this.preferences.length) return '';
 
     let group, groupmates, matchedPrefs;
-    console.log(this.system.preferencesType);
     switch (this.system.preferencesType) {
       case 'groupPreferences':
         group = this.getGroup();

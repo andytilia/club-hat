@@ -41,6 +41,7 @@ const sketch = (p5) => {
         member.move();
       }
     });
+    system.showStats(10, 20);
   };
   p5.mousePressed = () => {
     // If a member was clicked, start dragging it

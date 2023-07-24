@@ -161,4 +161,40 @@ export default class EnrollmentSystem {
       yOffset += 20; // Add extra space between groups
     }
   }
+
+  showStats(x, y) {
+    let totalMembers = this.members.length;
+    let placedMembers = this.members.filter(
+      (member) => member.getGroup() !== null
+    ).length;
+    let placedHasPreference = this.members.filter(
+      (member) =>
+        member.preferences.length && member.getGroup() !== null
+    ).length;
+    let placedWithPreference = this.members.filter((member) => {
+      let group = member.getGroup();
+      return (
+        group !== null && member.preferences.includes(group.name)
+      );
+    }).length;
+
+    const pctPlaced = (100 * placedMembers) / totalMembers;
+    const pctPlacedWithPreference =
+      (100 * placedWithPreference) / placedHasPreference;
+    this.p5.textAlign(this.p5.LEFT, this.p5.BOTTOM);
+    this.p5.text(
+      `${placedMembers}/${totalMembers} (${pctPlaced.toFixed(
+        0
+      )}%) placed`,
+      x,
+      y
+    );
+    this.p5.text(
+      `${placedWithPreference}/${placedHasPreference} (${pctPlacedWithPreference.toFixed(
+        0
+      )}%) happy`,
+      x,
+      y + 15
+    );
+  }
 }
