@@ -1,6 +1,7 @@
 export default class Member {
-  constructor(system, name, x, y, w, h, preferences) {
+  constructor(system, id, name, x, y, w, h, preferences) {
     this.system = system;
+    this.id = id;
     this.name = name;
     this.originalX = x;
     this.originalY = y;
@@ -40,7 +41,13 @@ export default class Member {
       p5.stroke(200, 0, 0);
     } else if (
       this.system.getFocusedMember() !== undefined &&
-      this.system.getFocusedMember().name === this.name
+      this.system.getFocusedMember().id === this.id
+    ) {
+      p5.stroke(20, 20, 20);
+      p5.strokeWeight(2);
+    } else if (
+      this.system.getFocusedMember() !== undefined &&
+      this.system.getFocusedMember().preferences.includes(this.id)
     ) {
       p5.stroke(200, 200, 0);
       p5.strokeWeight(3);
@@ -56,7 +63,11 @@ export default class Member {
     p5.text(this.name, this.x + 5, this.y + this.h / 2);
 
     p5.textAlign(p5.RIGHT, p5.CENTER);
-    p5.text(this.getHappiness(), this.x + this.w - 5, this.y + this.h / 2);
+    p5.text(
+      this.getHappiness(),
+      this.x + this.w - 5,
+      this.y + this.h / 2
+    );
   }
 
   showOriginal() {
@@ -67,7 +78,11 @@ export default class Member {
     p5.fill(0); // black text
     p5.noStroke();
     p5.textAlign(p5.LEFT, p5.CENTER);
-    p5.text(this.name, this.originalX + 5, this.originalY + this.h / 2);
+    p5.text(
+      this.name,
+      this.originalX + 5,
+      this.originalY + this.h / 2
+    );
 
     p5.textAlign(p5.RIGHT, p5.CENTER);
     p5.text(
@@ -111,21 +126,46 @@ export default class Member {
     );
   }
 
-  getHappiness() {
-    if (this.preferences.length === 0) {
-      return "";
-    }
-
+  getGroupmateIds() {
     const group = this.getGroup();
-    if (group === null) {
-      return "?";
+    if (!group) {
+      return [];
+    }
+    const groupMembers = group.getMembers();
+    if (groupMembers.length == 0) {
+      return [];
     }
 
-    const index = this.preferences.indexOf(group.name);
-    if (index >= 0) {
-      return index + 1;
-    }
+    return groupMembers
+      .filter((member) => member !== null && member.id !== this.id)
+      .map((member) => member.id);
+  }
 
-    return "X";
+  getHappiness() {
+    if (!this.preferences.length) return '';
+
+    let group, groupmates, matchedPrefs;
+    console.log(this.system.preferencesType);
+    switch (this.system.preferencesType) {
+      case 'groupPreferences':
+        group = this.getGroup();
+        if (!group) return '?';
+
+        let index = this.preferences.indexOf(group.name);
+        return index >= 0 ? index + 1 : 'X';
+
+      case 'memberPreferences':
+        group = this.getGroup();
+        groupmates = this.getGroupmateIds();
+        if (!group || !groupmates) return '?';
+
+        matchedPrefs = this.preferences.filter((pref) =>
+          groupmates.includes(pref)
+        );
+        return matchedPrefs.length > 0 ? matchedPrefs.length : 'X';
+
+      default:
+        return '';
+    }
   }
 }

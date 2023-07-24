@@ -1,4 +1,4 @@
-import EnrollmentSystem from "./EnrollmentSystem.js";
+import EnrollmentSystem from './EnrollmentSystem.js';
 
 let cellWidth = 100;
 let cellHeight = 30;
@@ -9,13 +9,20 @@ let system;
 
 const sketch = (p5) => {
   p5.preload = () => {
-    groupData = p5.loadTable("groups.csv", "header");
-    memberData = p5.loadTable("members.csv", "header");
+    groupData = p5.loadTable('groups.csv', 'header');
+    memberData = p5.loadTable('members.csv', 'header');
+    // groupData = p5.loadTable('groups2.csv', 'header');
+    // memberData = p5.loadTable('members2.csv', 'header');
   };
 
   p5.setup = () => {
     p5.createCanvas(p5.windowWidth, p5.windowHeight);
-    system = new EnrollmentSystem(p5, cellWidth, cellHeight, cellBuffer);
+    system = new EnrollmentSystem(
+      p5,
+      cellWidth,
+      cellHeight,
+      cellBuffer
+    );
     system.createGroups(groupData);
     system.createMembers(memberData);
   };
@@ -48,6 +55,10 @@ const sketch = (p5) => {
   p5.mouseReleased = () => {
     system.onMouseReleased();
   };
+
+  p5.windowResized = () => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+  };
 };
 
-const myp5 = new p5(sketch, "enroll");
+const myp5 = new p5(sketch, 'enroll');

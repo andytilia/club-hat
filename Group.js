@@ -1,4 +1,4 @@
-import Seat from "./Seat.js";
+import Seat from './Seat.js';
 
 export default class Group {
   constructor(system, name, seatCount, startX, startY) {
@@ -21,7 +21,8 @@ export default class Group {
           new Seat(
             this,
             this.x,
-            this.y + i * (this.system.cellHeight + this.system.cellBuffer),
+            this.y +
+              i * (this.system.cellHeight + this.system.cellBuffer),
             this.system.cellWidth,
             this.system.cellHeight
           )
@@ -41,11 +42,16 @@ export default class Group {
     p5.fill(0);
     p5.noStroke();
     p5.textAlign(p5.LEFT, p5.BOTTOM);
-    let focusedMember = this.system.getFocusedMember();
-    if (focusedMember && focusedMember.preferences.includes(this.name)) {
-      p5.stroke(200, 200, 0);
-      p5.strokeWeight(2);
-      p5.fill(50, 50, 0);
+    if (this.system.preferencesType === 'groupPreferences') {
+      let focusedMember = this.system.getFocusedMember();
+      if (
+        focusedMember &&
+        focusedMember.preferences.includes(this.name)
+      ) {
+        p5.stroke(200, 200, 0);
+        p5.strokeWeight(2);
+        p5.fill(50, 50, 0);
+      }
     }
     p5.text(this.name, this.x, this.y - 5);
   }

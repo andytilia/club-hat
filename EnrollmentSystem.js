@@ -1,5 +1,5 @@
-import Group from "./Group.js";
-import Member from "./Member.js";
+import Group from './Group.js';
+import Member from './Member.js';
 
 export default class EnrollmentSystem {
   constructor(p5, cellWidth, cellHeight, cellBuffer) {
@@ -10,6 +10,7 @@ export default class EnrollmentSystem {
     this.cellWidth = cellWidth;
     this.cellHeight = cellHeight;
     this.cellBuffer = cellBuffer;
+    this.preferencesType = '';
   }
 
   createGroups(groups) {
@@ -18,8 +19,8 @@ export default class EnrollmentSystem {
     let xOffset = this.cellWidth + this.cellBuffer * 3;
 
     groups.rows.forEach((row) => {
-      let groupName = row.getString("name");
-      let groupMaxSize = row.getNum("maxSize");
+      let groupName = row.getString('name');
+      let groupMaxSize = row.getNum('maxSize');
 
       let newGroup = new Group(
         this,
@@ -47,19 +48,25 @@ export default class EnrollmentSystem {
   }
 
   createMembers(newMembers) {
+    this.preferencesType = newMembers.columns[2];
+
     let x = 50;
     let y = 50;
     let yOffset = this.cellHeight + this.cellBuffer;
 
     newMembers.rows.forEach((row) => {
-      let memberName = row.getString("name");
-
-      let preferencesString = row.getString("preferences").trim();
+      let memberId = row.getString('id');
+      let memberName = row.getString('name');
+      let preferencesString = row
+        .getString(this.preferencesType)
+        .trim();
       let preferencesList =
-        preferencesString.length > 0 ? preferencesString.split("|") : [];
-      console.log(preferencesList);
+        preferencesString.length > 0
+          ? preferencesString.split('|')
+          : [];
       let newMember = new Member(
         this,
+        memberId,
         memberName,
         x,
         y,
@@ -94,7 +101,9 @@ export default class EnrollmentSystem {
   }
 
   showMemberOnTop(member) {
-    const index = this.members.findIndex((obj) => obj["name"] === member.name);
+    const index = this.members.findIndex(
+      (obj) => obj['name'] === member.name
+    );
     if (index > -1) {
       const item = this.members.splice(index, 1)[0];
       this.members.push(item);
@@ -143,7 +152,9 @@ export default class EnrollmentSystem {
       text(`Group: ${group.name}`, x, y + yOffset);
       yOffset += 20;
       for (let [index, seat] of group.seats.entries()) {
-        let memberName = seat.isOccupied() ? seat.member.name : "Empty";
+        let memberName = seat.isOccupied()
+          ? seat.member.name
+          : 'Empty';
         text(`  Seat ${index + 1}: ${memberName}`, x, y + yOffset);
         yOffset += 20;
       }
