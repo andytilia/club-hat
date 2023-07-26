@@ -167,4 +167,8 @@ export default class Member {
         return '';
     }
   }
+
+  isHappy() {
+    return !Number.isNaN(Number.parseInt(this.getHappiness()));
+  }
 }

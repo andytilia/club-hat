@@ -173,9 +173,16 @@ export default class EnrollmentSystem {
     ).length;
     let placedWithPreference = this.members.filter((member) => {
       let group = member.getGroup();
-      return (
-        group !== null && member.preferences.includes(group.name)
-      );
+      return group !== null && member.isHappy();
+      // if (this.preferencesType === "groupPreferences") {
+      //   return (
+      //     group !== null && member.preferences.includes(group.name)
+      //   );
+      // } else if (this.preferencesType === "memberPreferences") {
+      //   return (
+      //     group !== null && member.preferences.includes(group.name)
+      //   );
+      // }
     }).length;
 
     const pctPlaced = (100 * placedMembers) / totalMembers;
