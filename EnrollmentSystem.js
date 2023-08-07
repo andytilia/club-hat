@@ -205,7 +205,6 @@ export default class EnrollmentSystem {
     const pctPlacedWithPreference =
       (100 * placedWithPreference.length) /
       placedHasPreference.length;
-    const averageHappiness = this.getSystemHappiness();
 
     this.p5.textAlign(this.p5.LEFT, this.p5.BOTTOM);
     this.p5.text(
@@ -218,9 +217,16 @@ export default class EnrollmentSystem {
     this.p5.text(
       `${placedWithPreference.length}/${
         placedHasPreference.length
-      } (${pctPlacedWithPreference.toFixed(0)}%) happy`,
+      } (${pctPlacedWithPreference.toFixed(0)}%) placed are happy`,
       x,
-      y + 15
+      y + 13
+    );
+    this.p5.text(
+      `${(this.getSystemHappiness() * 100).toFixed(
+        0
+      )}% system happiness`,
+      x,
+      y + 26
     );
   }
 
@@ -245,6 +251,18 @@ export default class EnrollmentSystem {
   }
 
   getSystemHappiness() {
+    const happyMembers = this.members.filter((member) =>
+      member.isHappy()
+    );
+    const membersHavingPreference = this.members.filter(
+      (member) => member.preferences.length > 0
+    );
+    return (
+      happyMembers.length / membersHavingPreference.length
+    ).toFixed(2);
+  }
+
+  getAverageHappiness() {
     const numericHappinessValues = this.members
       .map((member) => member.getHappiness())
       .filter((value) => typeof value === 'number');
