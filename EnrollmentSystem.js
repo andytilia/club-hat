@@ -222,11 +222,6 @@ export default class EnrollmentSystem {
       x,
       y + 15
     );
-    this.p5.text(
-      `${averageHappiness.toFixed(1)} happiness`,
-      x,
-      y + 30
-    );
   }
 
   getPlacedMembers() {
