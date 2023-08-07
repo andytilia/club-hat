@@ -12,8 +12,8 @@ const sketch = (p5) => {
   p5.preload = () => {
     groupData = p5.loadTable('groups.csv', 'header');
     memberData = p5.loadTable('members.csv', 'header');
-    groupData = p5.loadTable('groups2.csv', 'header');
-    memberData = p5.loadTable('members2.csv', 'header');
+    // groupData = p5.loadTable('groups2.csv', 'header');
+    // memberData = p5.loadTable('members2.csv', 'header');
   };
 
   p5.setup = () => {

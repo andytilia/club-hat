@@ -151,7 +151,7 @@ export default class Member {
         if (!group) return '?';
 
         let index = this.preferences.indexOf(group.name);
-        return index >= 0 ? index + 1 : 'X';
+        return index >= 0 ? Math.max(3 - index, 0) : 'X';
 
       case 'memberPreferences':
         group = this.getGroup();
