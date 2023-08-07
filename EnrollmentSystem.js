@@ -16,11 +16,13 @@ export default class EnrollmentSystem {
 
   autoPlaceMembers() {
     const assignment = this.strategy.autoPlace(this);
+    // console.log(assignment);
     this.applyAssignment(assignment);
   }
 
   applyAssignment(assignment) {
     // Clear current seat assignments
+
     for (let group of this.groups) {
       for (let seat of group.seats) {
         seat.unassignMember();
@@ -257,9 +259,7 @@ export default class EnrollmentSystem {
     const membersHavingPreference = this.members.filter(
       (member) => member.preferences.length > 0
     );
-    return (
-      happyMembers.length / membersHavingPreference.length
-    ).toFixed(2);
+    return happyMembers.length / membersHavingPreference.length;
   }
 
   getAverageHappiness() {
@@ -277,5 +277,29 @@ export default class EnrollmentSystem {
         ? sum / numericHappinessValues.length
         : 0;
     return average;
+  }
+
+  evaluateSolutionFitness(solution) {
+    // Create a temporary copy of the system's state
+    const tempSystem = _.cloneDeep(this);
+
+    // Check if the solution is an array or another iterable object
+    if (!Array.isArray(solution)) {
+      console.error('Solution is not an array:', solution);
+      return 0; // Return a default fitness value (or handle the error as needed)
+    }
+
+    // Apply the solution to the temporary copy
+    try {
+      tempSystem.applyAssignment(solution);
+    } catch (error) {
+      console.error('Error applying solution:', error);
+      return 0; // Return a default fitness value (or handle the error as needed)
+    }
+
+    // Get the fitness value from the temporary copy
+    const fitness = tempSystem.getSystemHappiness();
+
+    return fitness;
   }
 }

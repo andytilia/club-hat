@@ -18,7 +18,7 @@ export default class RandomAssignmentStrategy {
         randomGroup.availableSeats--; // Decrement available seats
       }
     }
-
+    // console.log(assignment);
     return assignment;
   }
 
