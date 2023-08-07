@@ -1,7 +1,11 @@
 export default class RandomAssignmentStrategy {
   autoPlace(system) {
     const assignment = [];
-    let availableGroups = [...system.groups];
+    const availableGroups = system.groups.map((group) => ({
+      name: group.name,
+      availableSeats: group.seats.filter((seat) => !seat.isOccupied())
+        .length,
+    }));
 
     for (let member of system.members) {
       const randomGroup =
@@ -11,36 +15,19 @@ export default class RandomAssignmentStrategy {
           memberName: member.name,
           groupName: randomGroup.name,
         });
-        this.assignMemberToGroup(randomGroup, member);
+        randomGroup.availableSeats--; // Decrement available seats
       }
-
-      availableGroups = availableGroups.filter((group) =>
-        this.hasAvailableSeat(group)
-      );
     }
 
     return assignment;
   }
 
   getRandomGroupWithAvailableSeat(groups) {
-    const groupsWithAvailableSeats = groups.filter((group) =>
-      this.hasAvailableSeat(group)
+    const groupsWithAvailableSeats = groups.filter(
+      (group) => group.availableSeats > 0
     );
     return groupsWithAvailableSeats[
       Math.floor(Math.random() * groupsWithAvailableSeats.length)
     ];
-  }
-
-  hasAvailableSeat(group) {
-    return group.seats.some((seat) => !seat.isOccupied());
-  }
-
-  assignMemberToGroup(group, member) {
-    const availableSeat = group.seats.find(
-      (seat) => !seat.isOccupied()
-    );
-    if (availableSeat) {
-      availableSeat.assignMember(member);
-    }
   }
 }
