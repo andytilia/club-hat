@@ -2,7 +2,7 @@ import Group from './Group.js';
 import Member from './Member.js';
 
 export default class EnrollmentSystem {
-  constructor(p5, cellWidth, cellHeight, cellBuffer) {
+  constructor(p5, cellWidth, cellHeight, cellBuffer, strategy) {
     this.p5 = p5;
     this.groups = [];
     this.members = [];
@@ -11,6 +11,39 @@ export default class EnrollmentSystem {
     this.cellHeight = cellHeight;
     this.cellBuffer = cellBuffer;
     this.preferencesType = '';
+    this.strategy = strategy;
+  }
+
+  autoPlaceMembers() {
+    const assignment = this.strategy.autoPlace(this);
+    this.applyAssignment(assignment);
+  }
+
+  applyAssignment(assignment) {
+    // Clear current seat assignments
+    for (let group of this.groups) {
+      for (let seat of group.seats) {
+        seat.unassignMember();
+      }
+    }
+
+    // Apply new seat assignments
+    for (let assign of assignment) {
+      let member = this.members.find(
+        (member) => member.name === assign.memberName
+      );
+      let group = this.groups.find(
+        (group) => group.name === assign.groupName
+      );
+      if (member && group) {
+        let availableSeat = group.seats.find(
+          (seat) => !seat.isOccupied()
+        );
+        if (availableSeat) {
+          availableSeat.assignMember(member);
+        }
+      }
+    }
   }
 
   createGroups(groups) {

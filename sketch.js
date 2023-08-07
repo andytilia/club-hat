@@ -1,4 +1,5 @@
 import EnrollmentSystem from './EnrollmentSystem.js';
+import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 
 let cellWidth = 100;
 let cellHeight = 30;
@@ -17,14 +18,17 @@ const sketch = (p5) => {
 
   p5.setup = () => {
     p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    const randomStrategy = new RandomAssignmentStrategy();
     system = new EnrollmentSystem(
       p5,
       cellWidth,
       cellHeight,
-      cellBuffer
+      cellBuffer,
+      randomStrategy
     );
     system.createGroups(groupData);
     system.createMembers(memberData);
+    system.autoPlaceMembers();
   };
 
   p5.draw = () => {
