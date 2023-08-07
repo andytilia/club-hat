@@ -148,10 +148,10 @@ export default class Member {
     switch (this.system.preferencesType) {
       case 'groupPreferences':
         group = this.getGroup();
-        if (!group) return '?';
+        if (!group) return '-';
 
         let index = this.preferences.indexOf(group.name);
-        return index >= 0 ? Math.max(3 - index, 0) : 'X';
+        return index >= 0 ? Math.max(3 - index, 0) : 0;
 
       case 'memberPreferences':
         group = this.getGroup();
@@ -161,7 +161,7 @@ export default class Member {
         matchedPrefs = this.preferences.filter((pref) =>
           groupmates.includes(pref)
         );
-        return matchedPrefs.length > 0 ? matchedPrefs.length : 'X';
+        return matchedPrefs.length;
 
       default:
         return '';
@@ -169,6 +169,7 @@ export default class Member {
   }
 
   isHappy() {
-    return !Number.isNaN(Number.parseInt(this.getHappiness()));
+    const happiness = this.getHappiness();
+    return typeof happiness === 'number' && happiness > 0;
   }
 }

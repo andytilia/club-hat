@@ -196,45 +196,73 @@ export default class EnrollmentSystem {
   }
 
   showStats(x, y) {
-    let totalMembers = this.members.length;
-    let placedMembers = this.members.filter(
-      (member) => member.getGroup() !== null
-    ).length;
-    let placedHasPreference = this.members.filter(
-      (member) =>
-        member.preferences.length && member.getGroup() !== null
-    ).length;
-    let placedWithPreference = this.members.filter((member) => {
-      let group = member.getGroup();
-      return group !== null && member.isHappy();
-      // if (this.preferencesType === "groupPreferences") {
-      //   return (
-      //     group !== null && member.preferences.includes(group.name)
-      //   );
-      // } else if (this.preferencesType === "memberPreferences") {
-      //   return (
-      //     group !== null && member.preferences.includes(group.name)
-      //   );
-      // }
-    }).length;
+    let placedMembers = this.getPlacedMembers();
+    let placedHasPreference = this.getPlacedMembersHavingPreference();
+    let placedWithPreference = this.getPlacedMembersWithPreference();
 
-    const pctPlaced = (100 * placedMembers) / totalMembers;
+    const pctPlaced =
+      (100 * placedMembers.length) / this.members.length;
     const pctPlacedWithPreference =
-      (100 * placedWithPreference) / placedHasPreference;
+      (100 * placedWithPreference.length) /
+      placedHasPreference.length;
+    const averageHappiness = this.getSystemHappiness();
+
     this.p5.textAlign(this.p5.LEFT, this.p5.BOTTOM);
     this.p5.text(
-      `${placedMembers}/${totalMembers} (${pctPlaced.toFixed(
-        0
-      )}%) placed`,
+      `${placedMembers.length}/${
+        this.members.length
+      } (${pctPlaced.toFixed(0)}%) placed`,
       x,
       y
     );
     this.p5.text(
-      `${placedWithPreference}/${placedHasPreference} (${pctPlacedWithPreference.toFixed(
-        0
-      )}%) happy`,
+      `${placedWithPreference.length}/${
+        placedHasPreference.length
+      } (${pctPlacedWithPreference.toFixed(0)}%) happy`,
       x,
       y + 15
     );
+    this.p5.text(
+      `${averageHappiness.toFixed(1)} happiness`,
+      x,
+      y + 30
+    );
+  }
+
+  getPlacedMembers() {
+    return this.members.filter(
+      (member) => member.getGroup() !== null
+    );
+  }
+
+  getPlacedMembersHavingPreference() {
+    return this.members.filter(
+      (member) =>
+        member.preferences.length && member.getGroup() !== null
+    );
+  }
+
+  getPlacedMembersWithPreference() {
+    return this.members.filter((member) => {
+      let group = member.getGroup();
+      return group !== null && member.isHappy();
+    });
+  }
+
+  getSystemHappiness() {
+    const numericHappinessValues = this.members
+      .map((member) => member.getHappiness())
+      .filter((value) => typeof value === 'number');
+
+    const sum = numericHappinessValues.reduce(
+      (acc, value) => acc + value,
+      0
+    );
+
+    const average =
+      numericHappinessValues.length > 0
+        ? sum / numericHappinessValues.length
+        : 0;
+    return average;
   }
 }
