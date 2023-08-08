@@ -1,61 +1,245 @@
-function getSampleData() {
-  return `Timestamp,Email Address,YourName,pref1 ,pref2 ,pref3 ,pref4,pref5 
-  6/5/2023 9:56:56,26kandmi@wcsu.net,Mimi Kanda-Olmstead,Maya Sluka,Anna Fink,Mia Zillian,Aleksandra Cirovic,Sadie Boulbol
-  6/5/2023 9:58:44,24shorcl@wcsu.net,Clara Shortle ,Charlotte Nunan ,Remy Malik,Leah Kuhnert,Phoebe Anderson ,Heikke Tans
-  6/5/2023 10:00:10,25jillka@wcsu.net,Kamryn jillson ,Ben Runstein ,Alice Cayer,Vince petrone ,,
-  6/5/2023 10:01:01,24yuenka@wcsu.net,Kamron Yuengling ,William Obbard ,Delia Morgan,Char Nunan ,Tori McNamara,Seamus Powers
-  6/5/2023 10:01:27,25johnsh@wcsu.net,Shay Johnson,Cora Hewitt,Maggie pierce,Alice cayer,Lucia Rullo,Bridget Howe
-  6/5/2023 10:03:06,24shoecl@wcsu.net,Claudia shoemaker ,Hannah gubbins ,Mikayla Myers ,Quinn Stickney ,Chloe masilo ,Skye cully
-  6/5/2023 10:04:44,25courow@wcsu.net,Owen Courcey ,Graham Fox ,Averill Stevens ,James Underwood ,Myra McNaughton,Elizabeth Tindall
-  6/5/2023 10:05:07,24gubbha@wcsu.net,Hannah,maggie mello,chloe ,quinn,claudia ,gracie
-  6/5/2023 10:05:32,24mellma@wcsu.net,Maggie Mello,Hannah Gubbins,Quinn Stickney,Zach Martsolf-Tan,Chloe Masillo,Claudia Shoemaker`;
-}
-
-const useSample = true;
-function handleFileUpload(fileInputId, headerRowId, dataRowsId) {
-  const data = useSample
-    ? getSampleData()
-    : document.getElementById(fileInputId).files[0];
-
-  if (!data) {
-    alert('Please select a CSV file first, Noble Sovereign.');
-    return;
+class Person {
+  constructor(id, last, first, grade) {
+    this.id = id;
+    this.first = first;
+    this.last = last;
+    this.grade = grade;
+    this.preferences = [];
   }
 
-  parseCSV(data, headerRowId, dataRowsId);
+  getName() {
+    return `${this.first} ${this.last}`;
+  }
+
+  getAsCsvRow() {
+    const preferencesList = this.preferences.join('|');
+    return `${this.grade},${
+      this.id
+    },${this.getName()},${preferencesList}`;
+  }
+
+  addPreferenceByName(name) {
+    if (!name) return true;
+    const person = people.find(
+      (p) => p.getName().toLowerCase() === name.toLowerCase().trim()
+    );
+    if (person) {
+      this.addPreferenceById(person.id);
+      logToPage(
+        `😊 ${this.getName()} matched with ${name} = ${person.id}`
+      );
+      return true; // Continue processing
+    } else {
+      logToPage(
+        `❓ ${this.getName()} asks for ${name}. Who is that?`
+      );
+      const similarNames = findSimilarNames(name);
+      showNameSelection(name, similarNames);
+      return false; // Pause processing
+    }
+  }
+
+  addPreferenceById(id) {
+    this.preferences.push(id);
+    console.log(`Preference added by ID: ${id}`);
+  }
 }
 
-function parseCSV(file, headerRowId, dataRowsId) {
-  Papa.parse(file, {
-    header: true,
-    dynamicTyping: true,
-    skipEmptyLines: true,
+let people = [];
 
-    transformHeader: (header) =>
-      header.toLowerCase().includes('email') ? 'id' : header,
-    transform: (value, header) =>
-      header === 'id' ? value.split('@')[0] : value,
-    complete: (results) => {
-      renderHeader(Object.keys(results.data[0]), headerRowId);
-      renderRows(results.data, dataRowsId);
-    },
+function loadStudents() {
+  const fileInput = document.getElementById('csv-students');
+  const file = fileInput.files[0];
+
+  if (file) {
+    Papa.parse(file, {
+      header: true,
+      dynamicTyping: true,
+      transformHeader: transformHeader,
+      transform: transformValue,
+      complete: function (results) {
+        people = results.data.map(
+          (row) => new Person(row.id, row.last, row.first, row.grade)
+        );
+
+        people.forEach((person) =>
+          console.log(`loaded ${person.id} (${person.getName()})`)
+        );
+      },
+    });
+  } else {
+    console.log('No file selected!');
+  }
+}
+
+function transformHeader(header) {
+  const lowerHeader = header.toLowerCase();
+  if (lowerHeader.includes('email')) return 'id';
+  if (lowerHeader.includes('last')) return 'last';
+  if (lowerHeader.includes('first')) return 'first';
+  if (lowerHeader.includes('grade')) return 'grade';
+  return header;
+}
+
+function transformValue(value, header) {
+  if (header === 'id') return value.split('@')[0];
+  if (header === 'grade') return value.match(/\d+/)[0];
+  return value;
+}
+
+let currentRow = null;
+let currentPerson = null;
+let currentPreferenceColumn = null;
+let currentIndex = 0;
+let rows = [];
+let currentPreferenceIndex = 0; // Add this line at the beginning of your script
+
+function logToPage(message) {
+  document.getElementById('log').innerHTML += message + '<br>';
+  setTimeout(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight + 50);
+  }, 100);
+}
+
+function levenshtein(a, b) {
+  const matrix = Array.from({ length: a.length + 1 }, () =>
+    new Array(b.length + 1).fill(0)
+  );
+  for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+  for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1, // deletion
+        matrix[i][j - 1] + 1, // insertion
+        matrix[i - 1][j - 1] + cost // substitution
+      );
+    }
+  }
+  return matrix[a.length][b.length];
+}
+
+function findSimilarNames(name) {
+  if (!name) return []; // Return an empty array if name is null or undefined
+
+  name = name.toLowerCase();
+
+  const similarNames = people
+    .map((person) => person.getName())
+    .filter((personName) => {
+      // Check for Levenshtein distance
+      const L = 3;
+      const isLevenshteinMatch =
+        levenshtein(name, personName.toLowerCase()) <= L;
+
+      // Check for any N-letter sequence from the given name
+      const N = 4;
+      const isLetterSequenceMatch = [...name].some((_, i) => {
+        const sequence = name.substring(i, i + N);
+        return (
+          sequence.length === N &&
+          personName.toLowerCase().includes(sequence)
+        );
+      });
+
+      // Check for any N-letter sequence from the given name
+      const S = 2;
+      const isStartMatch = [...name].some((_) => {
+        const start = name.substring(0, S);
+        return personName.substring(0, S).toLowerCase() === start;
+      });
+
+      return (
+        isLevenshteinMatch || isLetterSequenceMatch || isStartMatch
+      );
+    });
+
+  return similarNames;
+}
+
+function showNameSelection(name, similarNames) {
+  const selectBox = document.getElementById('similar-names');
+  selectBox.innerHTML = '';
+  similarNames.forEach((similarName) => {
+    const option = document.createElement('option');
+    option.value = similarName;
+    option.text = similarName;
+    selectBox.appendChild(option);
   });
+  document.getElementById('name-selection').style.display = 'block';
 }
 
-function renderHeader(header, headerRowId) {
-  document.getElementById(headerRowId).innerHTML = header
-    .map((col) => `<th>${col}</th>`)
-    .join('');
+function processPreferences(index) {
+  if (index >= rows.length) return;
+
+  const row = rows[index];
+  const person = people.find((p) => p.id === row.id);
+
+  if (person) {
+    const preferences = ['pref1', 'pref2', 'pref3'];
+    for (
+      let i = currentPreferenceIndex;
+      i < preferences.length;
+      i++
+    ) {
+      const prefColumn = preferences[i];
+      const prefName = row[prefColumn];
+      currentRow = row;
+      currentPerson = person;
+      currentPreferenceColumn = prefColumn;
+      if (!person.addPreferenceByName(prefName)) {
+        // Pause processing this row if the preference was not found
+        currentIndex = index; // Save the current index
+        currentPreferenceIndex = i; // Save the current preference index
+        return;
+      }
+    }
+    currentPreferenceIndex = 0; // Reset preference index for the next person
+    logToPage(
+      `✅ ${person.getName()} stored as ${person.getAsCsvRow()}<br>`
+    );
+  } else {
+    logToPage(`Person not found for ID: ${row.id}<br>`);
+  }
+
+  // Move on to the next person
+  currentIndex++;
+  processPreferences(currentIndex); // Process the next person
 }
 
-function renderRows(rows, dataRowsId) {
-  const dataRows = document.getElementById(dataRowsId);
-  dataRows.innerHTML = rows
-    .map(
-      (cells) =>
-        `<tr>${Object.values(cells)
-          .map((cell) => `<td>${cell}</td>`)
-          .join('')}</tr>`
-    )
-    .join('');
+function useSelectedName() {
+  const selectedName = document.getElementById('similar-names').value;
+  currentPerson.addPreferenceByName(selectedName);
+  document.getElementById('name-selection').style.display = 'none';
+  // Continue processing from the saved preference index
+  currentPreferenceIndex++;
+  processPreferences(currentIndex);
+}
+
+function continueProcessing() {
+  currentIndex++; // Increment the current index
+  processPreferences(currentIndex); // Process the next person
+}
+
+function loadPreferences() {
+  const fileInput = document.getElementById('csv-preferences');
+  const file = fileInput.files[0];
+
+  if (file) {
+    Papa.parse(file, {
+      header: true,
+      dynamicTyping: true,
+      transformHeader: transformHeader, // If needed
+      transform: transformValue, // If needed
+      complete: function (results) {
+        rows = results.data;
+        currentIndex = 0;
+        processPreferences(currentIndex);
+      },
+    });
+  } else {
+    console.log('No file selected!');
+  }
 }

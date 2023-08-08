@@ -7,19 +7,17 @@
     <title>CSV Parser</title>
 </head>
 <body>
-    <h1>Upload CSV Files</h1>
-<input type="file" id="csvFile1" accept=".csv" />
-<button onclick="handleFileUpload('csvFile1', 'headerRow1', 'dataRows1')">Upload and Parse First CSV</button>
-<table id="dataTable1">
-    <thead><tr id="headerRow1"></tr></thead>
-    <tbody id="dataRows1"></tbody>
-</table>
-<input type="file" id="csvFile2" accept=".csv" />
-<button onclick="handleFileUpload('csvFile2', 'headerRow2', 'dataRows2')">Upload and Parse Second CSV</button>
-<table id="dataTable2">
-    <thead><tr id="headerRow2"></tr></thead>
-    <tbody id="dataRows2"></tbody>
-</table>
+    <input type="file" id="csv-students" accept=".csv" />
+    <button onclick="loadStudents()">Load Students</button>
+<br>
+<input type="file" id="csv-preferences" accept=".csv" />
+<button onclick="loadPreferences()">Load Preferences</button>
+<div id="log"></div>
+<div id="name-selection" style="display: none;">
+  <select id="similar-names"></select>
+  <button onclick="useSelectedName()">Use This Name</button>
+</div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
