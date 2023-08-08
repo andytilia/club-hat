@@ -10,7 +10,7 @@ export default class EnrollmentSystem {
     this.cellWidth = cellWidth;
     this.cellHeight = cellHeight;
     this.cellBuffer = cellBuffer;
-    this.preferencesType = '';
+    this.preferencesType = 'memberPreferences';
     this.strategy = strategy;
   }
 
@@ -83,8 +83,6 @@ export default class EnrollmentSystem {
   }
 
   createMembers(newMembers) {
-    this.preferencesType = newMembers.columns[2];
-
     let x = 50;
     let y = 50;
     let yOffset = this.cellHeight + this.cellBuffer;
@@ -92,9 +90,7 @@ export default class EnrollmentSystem {
     newMembers.rows.forEach((row) => {
       let memberId = row.getString('id');
       let memberName = row.getString('name');
-      let preferencesString = row
-        .getString(this.preferencesType)
-        .trim();
+      let preferencesString = row.getString('preferences').trim();
       let preferencesList =
         preferencesString.length > 0
           ? preferencesString.split('|')
@@ -109,6 +105,7 @@ export default class EnrollmentSystem {
         this.cellHeight,
         preferencesList
       );
+      console.log('importing: ', newMember);
       this.addMember(newMember);
       y += yOffset;
     });

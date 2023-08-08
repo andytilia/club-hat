@@ -2,7 +2,7 @@ import EnrollmentSystem from './EnrollmentSystem.js';
 import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 import GeneticAlgorithmStrategy from './GeneticAlgorithmStrategy.js';
 
-let cellWidth = 80;
+let cellWidth = 150;
 let cellHeight = 20;
 let cellBuffer = 4;
 let groupData;
@@ -11,8 +11,11 @@ let system;
 
 const sketch = (p5) => {
   p5.preload = () => {
-    groupData = p5.loadTable('groups2.csv', 'header');
-    memberData = p5.loadTable('members2.csv', 'header');
+    groupData = p5.loadTable('test-groups.csv', 'header');
+    memberData = p5.loadTable(
+      'data-2023-08-08-18-44-04.csv',
+      'header'
+    );
   };
 
   p5.setup = () => {

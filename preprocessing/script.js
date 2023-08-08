@@ -161,6 +161,7 @@ function findSimilarNames(name) {
 
 function showNameSelection(name, similarNames) {
   const selectBox = document.getElementById('similar-names');
+  selectBox.focus();
   selectBox.innerHTML = '';
   similarNames.forEach((similarName) => {
     const option = document.createElement('option');
@@ -172,8 +173,11 @@ function showNameSelection(name, similarNames) {
 }
 
 function processPreferences(index) {
-  if (index >= rows.length) return;
-
+  if (index >= rows.length) {
+    logToPage('<hr>No more people!');
+    downloadCSV();
+    return;
+  }
   const row = rows[index];
   const person = people.find((p) => p.id === row.id);
 
@@ -231,6 +235,7 @@ function loadPreferences() {
     Papa.parse(file, {
       header: true,
       dynamicTyping: true,
+      skipEmptyLines: true,
       transformHeader: transformHeader, // If needed
       transform: transformValue, // If needed
       complete: function (results) {
@@ -242,4 +247,44 @@ function loadPreferences() {
   } else {
     console.log('No file selected!');
   }
+}
+
+function downloadCSV() {
+  const headers = ['grade', 'id', 'name', 'preferences'];
+  const rows = people.map((person) => {
+    return person.getAsCsvRow();
+  });
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csvContent], {
+    type: 'text/csv;charset=utf-8;',
+  });
+
+  // Get the current timestamp in the required format
+  const now = new Date();
+  const timestamp = `${now.getFullYear()}-${String(
+    now.getMonth() + 1
+  ).padStart(2, '0')}-${String(now.getDate()).padStart(
+    2,
+    '0'
+  )}-${String(now.getHours()).padStart(2, '0')}-${String(
+    now.getMinutes()
+  ).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+
+  // Create a download link
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `data-${timestamp}.csv`);
+  link.style.visibility = 'hidden';
+
+  // Create a download button
+  const button = document.createElement('button');
+  button.textContent = 'Download CSV';
+  button.onclick = () => {
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Append the button to the document
+  document.body.appendChild(button);
 }

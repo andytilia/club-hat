@@ -2,10 +2,10 @@ import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 
 export default class GeneticAlgorithmStrategy {
   constructor(
-    populationSize = 1000,
+    populationSize = 30,
     mutationRate = 0.05,
     elitismRate = 0.2,
-    generations = 15
+    generations = 10
   ) {
     this.populationSize = populationSize;
     this.mutationRate = mutationRate;
@@ -31,6 +31,17 @@ export default class GeneticAlgorithmStrategy {
         children,
         fitness
       );
+
+      // Calculate the progress percentage
+      let progressPercentage =
+        ((generation + 1) / this.generations) * 100;
+
+      // Update the progress bar and text (assuming you're running this in a browser environment)
+      document.getElementById('progress-bar').value =
+        progressPercentage;
+      document.getElementById(
+        'progress-text'
+      ).textContent = `${progressPercentage.toFixed(2)}%`;
     }
     return this.getBestSolution(population, system);
   }
@@ -45,7 +56,34 @@ export default class GeneticAlgorithmStrategy {
   }
 
   evaluateFitness(solution, system) {
-    return system.evaluateSolutionFitness(solution);
+    // Call the original fitness evaluation method
+    let fitness = system.evaluateSolutionFitness(solution);
+
+    // Create a map to store the group sizes
+    let groupSizes = {};
+
+    // Iterate through the solution to calculate the group sizes
+    for (let assign of solution) {
+      let groupName = assign.groupName;
+      groupSizes[groupName] = (groupSizes[groupName] || 0) + 1;
+    }
+
+    // Calculate the minimum and maximum group sizes
+    let minSize = Math.min(...Object.values(groupSizes));
+    let maxSize = Math.max(...Object.values(groupSizes));
+
+    // Calculate the percentage difference between the largest and smallest groups
+    let sizeDifference =
+      ((maxSize - minSize) / ((maxSize + minSize) / 2)) * 100;
+
+    // Apply a penalty to the fitness score if the difference exceeds 15%
+    if (sizeDifference > 20) {
+      // You can adjust the penalty factor as needed
+      let penaltyFactor = 0.3;
+      fitness *= penaltyFactor;
+    }
+
+    return fitness;
   }
 
   selectParents(population, fitness) {

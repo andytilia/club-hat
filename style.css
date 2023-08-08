@@ -4,3 +4,17 @@ body {
   margin: 0;
   padding: 0;
 }
+
+#progress-container {
+  width: 100%;
+  text-align: center;
+}
+
+#progress-bar {
+  width: 80%;
+}
+
+#progress-text {
+  margin-left: 10px;
+}
+
