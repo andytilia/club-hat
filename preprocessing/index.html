@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>CSV Parser</title>
+</head>
+<body>
+    <h1>Upload CSV Files</h1>
+<input type="file" id="csvFile1" accept=".csv" />
+<button onclick="handleFileUpload('csvFile1', 'headerRow1', 'dataRows1')">Upload and Parse First CSV</button>
+<table id="dataTable1">
+    <thead><tr id="headerRow1"></tr></thead>
+    <tbody id="dataRows1"></tbody>
+</table>
+<input type="file" id="csvFile2" accept=".csv" />
+<button onclick="handleFileUpload('csvFile2', 'headerRow2', 'dataRows2')">Upload and Parse Second CSV</button>
+<table id="dataTable2">
+    <thead><tr id="headerRow2"></tr></thead>
+    <tbody id="dataRows2"></tbody>
+</table>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>

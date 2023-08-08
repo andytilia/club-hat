@@ -61,6 +61,14 @@ const sketch = (p5) => {
     system.onMouseReleased();
   };
 
+  p5.keyPressed = () => {
+    if (p5.key === 's') {
+      saveAssignments();
+    } else if (p5.key === 'o') {
+      loadAssignments();
+    }
+  };
+
   p5.windowResized = () => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
   };
