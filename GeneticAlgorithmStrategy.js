@@ -2,7 +2,7 @@ import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 
 export default class GeneticAlgorithmStrategy {
   constructor(
-    populationSize = 30,
+    populationSize = 10,
     mutationRate = 0.05,
     elitismRate = 0.2,
     generations = 10

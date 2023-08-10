@@ -66,4 +66,37 @@ export default class Group {
     }
     p5.text(this.name, this.x, this.y - 5);
   }
+
+  toJSON() {
+    return {
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      cellWidth: this.cellWidth,
+      cellHeight: this.cellHeight,
+      cellBuffer: this.cellBuffer,
+      seats: this.seats.map((seat) => seat.toJSON()),
+      // Skipping 'system' to avoid circular references.
+    };
+  }
+
+  static fromJSON(data, system) {
+    let group = new Group(
+      system,
+      data.name,
+      data.seatCount,
+      data.startX,
+      data.startY,
+      data.cellWidth,
+      data.cellHeight,
+      data.cellBuffer
+    );
+    console.log(group);
+    group.seats = data.seats.map((seatData) => {
+      console.log(seatData);
+      return Seat.fromJSON(group, seatData, system.members);
+    });
+    group.seats.forEach((seat) => (seat.group = group)); // Ensure each seat's group attribute is set
+    return group;
+  }
 }

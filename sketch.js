@@ -11,6 +11,7 @@ let yOffset = cellHeight + cellBuffer; // Space between members vertically
 let xOffset = cellWidth + cellBuffer; // Space between columns
 let groupData;
 let memberData;
+let membersPerColumn;
 let system;
 
 const sketch = (p5) => {
@@ -24,10 +25,9 @@ const sketch = (p5) => {
 
   p5.setup = () => {
     p5.createCanvas(p5.windowWidth, p5.windowHeight);
-    const randomStrategy = new RandomAssignmentStrategy();
-    system = new EnrollmentSystem(p5, new GeneticAlgorithmStrategy());
-    const membersPerColumn =
+    membersPerColumn =
       Math.floor((p5.windowHeight - initialY) / yOffset) - 3;
+    system = new EnrollmentSystem(p5, new GeneticAlgorithmStrategy());
     const numMembers = system.createMembers(
       memberData,
       membersPerColumn,
@@ -89,7 +89,7 @@ const sketch = (p5) => {
 
   p5.keyPressed = () => {
     if (p5.key === 's') {
-      system.saveAssignments();
+      system.saveAssignments(membersPerColumn);
     } else if (p5.key === 'o') {
       system.loadAssignments();
     }
@@ -101,3 +101,35 @@ const sketch = (p5) => {
 };
 
 const myp5 = new p5(sketch, 'enroll');
+
+let saveButton = document.getElementById('saveSystem');
+let loadButton = document.getElementById('loadSystem');
+let fileInput = document.getElementById('loadFile');
+
+saveButton.addEventListener('click', () => {
+  let dataStr =
+    'data:text/json;charset=utf-8,' +
+    encodeURIComponent(system.toJSON());
+  let downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute('href', dataStr);
+  downloadAnchorNode.setAttribute('download', 'systemState.json');
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+});
+
+loadButton.addEventListener('click', () => {
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', (event) => {
+  let file = event.target.files[0];
+  if (file) {
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      system.fromJSON(e.target.result);
+      // You might need to call any render or update functions to refresh the UI
+    };
+    reader.readAsText(file);
+  }
+});

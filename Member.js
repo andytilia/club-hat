@@ -172,4 +172,46 @@ export default class Member {
     const happiness = this.getHappiness();
     return typeof happiness === 'number' && happiness > 0;
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      originalX: this.originalX,
+      originalY: this.originalY,
+      x: this.x,
+      y: this.y,
+      w: this.w,
+      h: this.h,
+      preferences: this.preferences,
+      // Excluded the 'system' attribute to avoid circular references
+      // Also excluded UI-specific attributes like 'dragging', 'rollover', 'offsetX', and 'offsetY'
+    };
+  }
+
+  static fromJSON(data) {
+    // The system parameter is necessary to re-establish the reference to the EnrollmentSystem instance
+    let member = new Member(
+      null,
+      data.id,
+      data.name,
+      data.originalX,
+      data.originalY,
+      data.w,
+      data.h,
+      data.preferences
+    );
+
+    // Restore the other properties that were serialized
+    member.x = data.x;
+    member.y = data.y;
+
+    // Default values for UI-specific attributes (can be adjusted as necessary)
+    member.dragging = false;
+    member.rollover = false;
+    member.offsetX = 0;
+    member.offsetY = 0;
+
+    return member;
+  }
 }

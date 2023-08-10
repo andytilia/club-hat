@@ -68,4 +68,24 @@ export default class Seat {
       this.system.stopDraggingMember();
     }
   }
+
+  toJSON() {
+    return {
+      member: this.member ? this.member.id : null,
+      x: this.x,
+      y: this.y,
+      w: this.w,
+      h: this.h,
+      // Skipping 'group' and 'system' to avoid circular references.
+    };
+  }
+
+  static fromJSON(group, data, allMembers) {
+    let seat = new Seat(group, data.x, data.y, data.w, data.h);
+    console.log(seat);
+    if (data.member !== null && data.member !== undefined) {
+      seat.member = allMembers.find((m) => m.id === data.member);
+    }
+    return seat;
+  }
 }

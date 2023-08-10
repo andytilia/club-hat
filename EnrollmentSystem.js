@@ -123,7 +123,7 @@ export default class EnrollmentSystem {
         cellHeight,
         preferencesList
       );
-      console.log(newMember);
+      // console.log(newMember);
       this.addMember(newMember);
     });
 
@@ -319,54 +319,60 @@ export default class EnrollmentSystem {
     return fitness;
   }
 
-  async saveAssignments() {
+  async copyAssignments(membersPerColumn) {
     // Create an object to store the assignments, with group names as keys
     let assignments = {};
 
-    // Iterate through the groups and seats
+    // Existing logic: Fill the assignments object with group assignments...
     for (let group of this.groups) {
-      // Create an array for each group's members
       assignments[group.name] = [];
-
       for (let seat of group.seats) {
-        // If the seat is occupied, add the member's name to the group's array
         if (seat.isOccupied()) {
           assignments[group.name].push(seat.member.name);
         }
       }
     }
 
-    // Convert the assignments to a CSV format (one column per group)
+    // Calculate the number of columns required for members based on UI
+    const numMemberColumns = Math.ceil(
+      this.members.length / membersPerColumn
+    );
+
+    // Convert the assignments to a CSV format
     let csvAssignments = '';
     let maxGroupSize = Math.max(
       ...Object.values(assignments).map((members) => members.length)
+      // this.members.length // Consider the total number of members for the rows
     );
-    for (let i = -1; i < maxGroupSize; i++) {
-      for (let groupName of Object.keys(assignments)) {
-        // New logic: Add member's name for the "Members" column
-        if (i === -1) {
-          csvAssignments += `"Members",`;
-        } else {
-          let memberName = this.members[i]
-            ? this.members[i].name
-            : '';
-          csvAssignments += `"${memberName}",`;
-        }
 
-        // Add the group name as the header for the first row
+    for (let i = -1; i < maxGroupSize; i++) {
+      // New logic: Add member's name for the "Members" columns
+      for (let col = 0; col < numMemberColumns; col++) {
+        let memberIndex = i + col * membersPerColumn;
+        if (i === -1) {
+          csvAssignments += col === 0 ? `"Members",` : `"" ,`;
+        } else if (this.members[memberIndex]) {
+          csvAssignments += `"${this.members[memberIndex].name}",`;
+        } else {
+          csvAssignments += '"",';
+        }
+      }
+
+      csvAssignments += '"",'; // Blank column between members and groups
+
+      // Existing logic: Continue with group assignments...
+      for (let groupName of Object.keys(assignments)) {
         if (i === -1) {
           csvAssignments += `"${groupName}",`;
           continue;
         }
-
-        // Add the member's name or an empty cell if the group is smaller
-        let memberName = assignments[groupName][i] || '';
-        csvAssignments += `"${memberName}",`;
+        let groupNameMember = assignments[groupName][i] || '';
+        csvAssignments += `"${groupNameMember}",`;
       }
       csvAssignments += '\n'; // End of row
     }
 
-    // Copy the CSV content to the clipboard
+    // Existing logic: Copy CSV to clipboard, download, etc...
     try {
       await navigator.clipboard.writeText(csvAssignments);
       alert(
@@ -378,12 +384,7 @@ export default class EnrollmentSystem {
         'Failed to copy assignments to clipboard. You can still download the CSV file.'
       );
     }
-
-    // Save the CSV string to a file (or handle it as needed)
-    // You might use a library or custom code to download the file in the browser:
-    this.downloadFile(csvAssignments);
-
-    // Return the assignments as a CSV string (optional)
+    // this.downloadFile(csvAssignments);
     return csvAssignments;
   }
 
@@ -417,5 +418,30 @@ export default class EnrollmentSystem {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  toJSON() {
+    return JSON.stringify({
+      members: this.members.map((member) => member.toJSON()),
+      groups: this.groups.map((group) => group.toJSON()),
+    });
+  }
+
+  fromJSON(jsonString) {
+    const data = JSON.parse(jsonString);
+    this.members = data.members.map(Member.fromJSON);
+    this.groups = data.groups.map((groupData) =>
+      Group.fromJSON(groupData, this)
+    );
+    console.log(this.groups);
+    // Re-establish the connections that were severed during serialization
+    this.members.forEach((member) => (member.system = this));
+    this.groups.forEach((group) => {
+      group.system = this;
+      group.seats.forEach((seat) => {
+        seat.system = this;
+        seat.group = group;
+      });
+    });
   }
 }
