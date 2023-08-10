@@ -1,11 +1,23 @@
 import Seat from './Seat.js';
 
 export default class Group {
-  constructor(system, name, seatCount, startX, startY) {
+  constructor(
+    system,
+    name,
+    seatCount,
+    startX,
+    startY,
+    cellWidth,
+    cellHeight,
+    cellBuffer
+  ) {
     this.system = system;
     this.name = name;
     this.x = startX;
     this.y = startY;
+    this.cellWidth = cellWidth;
+    this.cellHeight = cellHeight;
+    this.cellBuffer = cellBuffer;
     this.seats = this.createSeats(seatCount);
   }
 
@@ -21,10 +33,9 @@ export default class Group {
           new Seat(
             this,
             this.x,
-            this.y +
-              i * (this.system.cellHeight + this.system.cellBuffer),
-            this.system.cellWidth,
-            this.system.cellHeight
+            this.y + i * (this.cellHeight + this.cellBuffer),
+            this.cellWidth,
+            this.cellHeight
           )
       );
     return seats;

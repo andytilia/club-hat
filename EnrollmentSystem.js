@@ -2,14 +2,11 @@ import Group from './Group.js';
 import Member from './Member.js';
 
 export default class EnrollmentSystem {
-  constructor(p5, cellWidth, cellHeight, cellBuffer, strategy) {
+  constructor(p5, strategy) {
     this.p5 = p5;
     this.groups = [];
     this.members = [];
     this.draggingMember = null;
-    this.cellWidth = cellWidth;
-    this.cellHeight = cellHeight;
-    this.cellBuffer = cellBuffer;
     this.preferencesType = 'memberPreferences';
     this.strategy = strategy;
   }
@@ -48,10 +45,18 @@ export default class EnrollmentSystem {
     }
   }
 
-  createGroups(groups) {
-    let initialX = 200;
-    let initialY = 50;
-    let xOffset = this.cellWidth + this.cellBuffer * 3;
+  createGroups(
+    groups,
+    membersPerColumn,
+    numMembers,
+    initialY,
+    xOffset,
+    cellWidth,
+    cellHeight,
+    cellBuffer
+  ) {
+    let initialX =
+      10 + Math.ceil(numMembers / membersPerColumn) * xOffset + 50;
 
     groups.rows.forEach((row) => {
       let groupName = row.getString('name');
@@ -63,13 +68,15 @@ export default class EnrollmentSystem {
         groupMaxSize,
         initialX,
         initialY,
-        this.cellHeight,
-        this.cellWidth,
-        this.cellBuffer
+        cellWidth,
+        cellHeight,
+        cellBuffer
       );
       this.addGroup(newGroup);
       initialX += xOffset;
     });
+
+    return groups.rows.length;
   }
 
   addGroup(group) {
@@ -82,12 +89,17 @@ export default class EnrollmentSystem {
     );
   }
 
-  createMembers(newMembers) {
-    let x = 50;
-    let y = 50;
-    let yOffset = this.cellHeight + this.cellBuffer;
-
-    newMembers.rows.forEach((row) => {
+  createMembers(
+    members,
+    membersPerColumn,
+    initialX,
+    initialY,
+    xOffset,
+    yOffset,
+    cellWidth,
+    cellHeight
+  ) {
+    members.rows.forEach((row, index) => {
       let memberId = row.getString('id');
       let memberName = row.getString('name');
       let preferencesString = row.getString('preferences').trim();
@@ -95,20 +107,27 @@ export default class EnrollmentSystem {
         preferencesString.length > 0
           ? preferencesString.split('|')
           : [];
+      let col = Math.floor(index / membersPerColumn); // Determine the column based on the index
+      let rowInCol = index % membersPerColumn; // Determine the row within the column
+
+      let x = initialX + col * xOffset;
+      let y = initialY + rowInCol * yOffset;
+
       let newMember = new Member(
         this,
         memberId,
         memberName,
         x,
         y,
-        this.cellWidth,
-        this.cellHeight,
+        cellWidth,
+        cellHeight,
         preferencesList
       );
-      console.log('importing: ', newMember);
+      console.log(newMember);
       this.addMember(newMember);
-      y += yOffset;
     });
+
+    return members.rows.length;
   }
 
   addMember(member) {
@@ -298,5 +317,105 @@ export default class EnrollmentSystem {
     const fitness = tempSystem.getSystemHappiness();
 
     return fitness;
+  }
+
+  async saveAssignments() {
+    // Create an object to store the assignments, with group names as keys
+    let assignments = {};
+
+    // Iterate through the groups and seats
+    for (let group of this.groups) {
+      // Create an array for each group's members
+      assignments[group.name] = [];
+
+      for (let seat of group.seats) {
+        // If the seat is occupied, add the member's name to the group's array
+        if (seat.isOccupied()) {
+          assignments[group.name].push(seat.member.name);
+        }
+      }
+    }
+
+    // Convert the assignments to a CSV format (one column per group)
+    let csvAssignments = '';
+    let maxGroupSize = Math.max(
+      ...Object.values(assignments).map((members) => members.length)
+    );
+    for (let i = -1; i < maxGroupSize; i++) {
+      for (let groupName of Object.keys(assignments)) {
+        // New logic: Add member's name for the "Members" column
+        if (i === -1) {
+          csvAssignments += `"Members",`;
+        } else {
+          let memberName = this.members[i]
+            ? this.members[i].name
+            : '';
+          csvAssignments += `"${memberName}",`;
+        }
+
+        // Add the group name as the header for the first row
+        if (i === -1) {
+          csvAssignments += `"${groupName}",`;
+          continue;
+        }
+
+        // Add the member's name or an empty cell if the group is smaller
+        let memberName = assignments[groupName][i] || '';
+        csvAssignments += `"${memberName}",`;
+      }
+      csvAssignments += '\n'; // End of row
+    }
+
+    // Copy the CSV content to the clipboard
+    try {
+      await navigator.clipboard.writeText(csvAssignments);
+      alert(
+        'Assignments copied to clipboard! You can paste them into Google Sheets.'
+      );
+    } catch (err) {
+      console.error('Failed to copy assignments to clipboard:', err);
+      alert(
+        'Failed to copy assignments to clipboard. You can still download the CSV file.'
+      );
+    }
+
+    // Save the CSV string to a file (or handle it as needed)
+    // You might use a library or custom code to download the file in the browser:
+    this.downloadFile(csvAssignments);
+
+    // Return the assignments as a CSV string (optional)
+    return csvAssignments;
+  }
+
+  downloadFile(content, filename) {
+    // Create a Blob object with the content
+    const blob = new Blob([content], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    // Create a temporary anchor element
+    const link = document.createElement('a');
+
+    // Set the href to the Blob object
+    link.href = URL.createObjectURL(blob);
+
+    // Get the current timestamp in the required format
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, '0')}-${String(now.getDate()).padStart(
+      2,
+      '0'
+    )}-${String(now.getHours()).padStart(2, '0')}-${String(
+      now.getMinutes()
+    ).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+
+    // Set the download attribute with the filename
+    link.download = `assignments-${timestamp}.csv`;
+
+    // Append the link to the document, click it, and then remove it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }

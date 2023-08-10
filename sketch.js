@@ -2,9 +2,13 @@ import EnrollmentSystem from './EnrollmentSystem.js';
 import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 import GeneticAlgorithmStrategy from './GeneticAlgorithmStrategy.js';
 
-let cellWidth = 150;
+let cellWidth = 130;
 let cellHeight = 20;
 let cellBuffer = 4;
+let initialX = 10; // Starting X position
+let initialY = 50; // Starting Y position
+let yOffset = cellHeight + cellBuffer; // Space between members vertically
+let xOffset = cellWidth + cellBuffer; // Space between columns
 let groupData;
 let memberData;
 let system;
@@ -21,21 +25,40 @@ const sketch = (p5) => {
   p5.setup = () => {
     p5.createCanvas(p5.windowWidth, p5.windowHeight);
     const randomStrategy = new RandomAssignmentStrategy();
-    system = new EnrollmentSystem(
-      p5,
+    system = new EnrollmentSystem(p5, new GeneticAlgorithmStrategy());
+    const membersPerColumn =
+      Math.floor((p5.windowHeight - initialY) / yOffset) - 3;
+    const numMembers = system.createMembers(
+      memberData,
+      membersPerColumn,
+      initialX,
+      initialY,
+      xOffset,
+      yOffset,
+      cellWidth,
+      cellHeight
+    );
+    const numGroups = system.createGroups(
+      groupData,
+      membersPerColumn,
+      numMembers,
+      initialY,
+      xOffset,
       cellWidth,
       cellHeight,
-      cellBuffer,
-      // randomStrategy
-      new GeneticAlgorithmStrategy()
+      cellBuffer
     );
-    system.createGroups(groupData);
-    system.createMembers(memberData);
+    p5.resizeCanvas(
+      (numGroups + Math.ceil(numMembers / membersPerColumn)) *
+        (cellWidth + cellBuffer) +
+        300,
+      numMembers * (cellHeight + cellBuffer) + 300
+    );
     system.autoPlaceMembers();
   };
 
   p5.draw = () => {
-    p5.background(210);
+    p5.background(255);
 
     system.groups.forEach((group) => {
       group.show();
@@ -66,15 +89,15 @@ const sketch = (p5) => {
 
   p5.keyPressed = () => {
     if (p5.key === 's') {
-      saveAssignments();
+      system.saveAssignments();
     } else if (p5.key === 'o') {
-      loadAssignments();
+      system.loadAssignments();
     }
   };
 
-  p5.windowResized = () => {
-    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
-  };
+  // p5.windowResized = () => {
+  //   p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+  // };
 };
 
 const myp5 = new p5(sketch, 'enroll');

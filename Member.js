@@ -72,7 +72,7 @@ export default class Member {
 
   showOriginal() {
     const p5 = this.system.p5;
-    p5.fill(200); // light grey
+    p5.fill(230); // light grey
     p5.noStroke();
     p5.rect(this.originalX, this.originalY, this.w, this.h);
     p5.fill(0); // black text
