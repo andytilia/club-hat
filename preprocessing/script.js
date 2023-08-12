@@ -65,6 +65,7 @@ function loadStudents() {
         people.forEach((person) =>
           console.log(`loaded ${person.id} (${person.getName()})`)
         );
+        console.log(`found ${people.length} students`);
       },
     });
   } else {
@@ -169,6 +170,10 @@ function showNameSelection(name, similarNames) {
     option.text = similarName;
     selectBox.appendChild(option);
   });
+  const skipOption = document.createElement('option');
+  skipOption.value = '-- skip --';
+  skipOption.text = '-- skip --';
+  selectBox.appendChild(skipOption);
   document.getElementById('name-selection').style.display = 'block';
 }
 
@@ -182,7 +187,7 @@ function processPreferences(index) {
   const person = people.find((p) => p.id === row.id);
 
   if (person) {
-    const preferences = ['pref1', 'pref2', 'pref3'];
+    const preferences = ['pref1', 'pref2', 'pref3', 'pref4', 'pref5'];
     for (
       let i = currentPreferenceIndex;
       i < preferences.length;
@@ -215,7 +220,9 @@ function processPreferences(index) {
 
 function useSelectedName() {
   const selectedName = document.getElementById('similar-names').value;
-  currentPerson.addPreferenceByName(selectedName);
+  if (selectedName !== '-- skip --') {
+    currentPerson.addPreferenceByName(selectedName);
+  }
   document.getElementById('name-selection').style.display = 'none';
   // Continue processing from the saved preference index
   currentPreferenceIndex++;

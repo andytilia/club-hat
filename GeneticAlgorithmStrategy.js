@@ -2,7 +2,7 @@ import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 
 export default class GeneticAlgorithmStrategy {
   constructor(
-    populationSize = 10,
+    populationSize = 500,
     mutationRate = 0.05,
     elitismRate = 0.2,
     generations = 10
@@ -20,9 +20,9 @@ export default class GeneticAlgorithmStrategy {
       generation < this.generations;
       generation++
     ) {
-      const fitness = population.map((solution) =>
-        this.evaluateFitness(solution, system)
-      );
+      const fitness = population.map((solution) => {
+        this.evaluateFitness(solution, system);
+      });
       const parents = this.selectParents(population, fitness);
       const children = this.crossover(parents);
       this.mutate(children);
@@ -67,7 +67,6 @@ export default class GeneticAlgorithmStrategy {
       let groupName = assign.groupName;
       groupSizes[groupName] = (groupSizes[groupName] || 0) + 1;
     }
-
     // Calculate the minimum and maximum group sizes
     let minSize = Math.min(...Object.values(groupSizes));
     let maxSize = Math.max(...Object.values(groupSizes));
@@ -82,7 +81,6 @@ export default class GeneticAlgorithmStrategy {
       let penaltyFactor = 0.3;
       fitness *= penaltyFactor;
     }
-
     return fitness;
   }
 
@@ -137,7 +135,10 @@ export default class GeneticAlgorithmStrategy {
     let nextGeneration = [];
 
     // Select the best individuals from the population
-    let eliteSize = Math.floor(this.elitismRate * population.length);
+    let eliteSize = Math.max(
+      Math.floor(this.elitismRate * population.length),
+      1
+    );
     let eliteIndices = fitness
       .map((fit, idx) => ({ fit, idx }))
       .sort((a, b) => b.fit - a.fit)

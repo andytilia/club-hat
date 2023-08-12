@@ -16,9 +16,9 @@ let system;
 
 const sketch = (p5) => {
   p5.preload = () => {
-    groupData = p5.loadTable('test-groups.csv', 'header');
+    groupData = p5.loadTable('data-groups12.csv', 'header');
     memberData = p5.loadTable(
-      'data-2023-08-08-18-44-04.csv',
+      'data-2023-08-12-14-02-18.csv',
       'header'
     );
   };

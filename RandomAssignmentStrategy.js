@@ -1,11 +1,14 @@
 export default class RandomAssignmentStrategy {
   autoPlace(system) {
     const assignment = [];
-    const availableGroups = system.groups.map((group) => ({
-      name: group.name,
-      availableSeats: group.seats.filter((seat) => !seat.isOccupied())
-        .length,
-    }));
+    const availableGroups = system.groups
+      .filter((group) => !group.inviteOnly)
+      .map((group) => ({
+        name: group.name,
+        availableSeats: group.seats.filter(
+          (seat) => !seat.isOccupied()
+        ).length,
+      }));
 
     for (let member of system.members) {
       const randomGroup =
@@ -18,7 +21,6 @@ export default class RandomAssignmentStrategy {
         randomGroup.availableSeats--; // Decrement available seats
       }
     }
-    // console.log(assignment);
     return assignment;
   }
 

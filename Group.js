@@ -9,7 +9,8 @@ export default class Group {
     startY,
     cellWidth,
     cellHeight,
-    cellBuffer
+    cellBuffer,
+    inviteOnly = false
   ) {
     this.system = system;
     this.name = name;
@@ -19,6 +20,7 @@ export default class Group {
     this.cellHeight = cellHeight;
     this.cellBuffer = cellBuffer;
     this.seats = this.createSeats(seatCount);
+    this.inviteOnly = inviteOnly;
   }
 
   getMembers() {
@@ -76,6 +78,7 @@ export default class Group {
       cellHeight: this.cellHeight,
       cellBuffer: this.cellBuffer,
       seats: this.seats.map((seat) => seat.toJSON()),
+      inviteOnly: this.inviteOnly,
       // Skipping 'system' to avoid circular references.
     };
   }
@@ -89,7 +92,8 @@ export default class Group {
       data.startY,
       data.cellWidth,
       data.cellHeight,
-      data.cellBuffer
+      data.cellBuffer,
+      data.inviteOnly
     );
     console.log(group);
     group.seats = data.seats.map((seatData) => {

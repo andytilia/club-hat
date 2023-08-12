@@ -19,13 +19,13 @@ export default class EnrollmentSystem {
 
   applyAssignment(assignment) {
     // Clear current seat assignments
-
     for (let group of this.groups) {
       for (let seat of group.seats) {
         seat.unassignMember();
       }
     }
 
+    console.log(assignment);
     // Apply new seat assignments
     for (let assign of assignment) {
       let member = this.members.find(
@@ -61,6 +61,7 @@ export default class EnrollmentSystem {
     groups.rows.forEach((row) => {
       let groupName = row.getString('name');
       let groupMaxSize = row.getNum('maxSize');
+      let groupInviteOnly = row.getString('inviteOnly') === 'true';
 
       let newGroup = new Group(
         this,
@@ -70,7 +71,8 @@ export default class EnrollmentSystem {
         initialY,
         cellWidth,
         cellHeight,
-        cellBuffer
+        cellBuffer,
+        groupInviteOnly
       );
       this.addGroup(newGroup);
       initialX += xOffset;
