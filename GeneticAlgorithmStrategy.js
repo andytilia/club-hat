@@ -2,10 +2,10 @@ import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 
 export default class GeneticAlgorithmStrategy {
   constructor(
-    populationSize = 500,
+    populationSize = 400,
     mutationRate = 0.05,
-    elitismRate = 0.2,
-    generations = 10
+    elitismRate = 0.05,
+    generations = 20
   ) {
     this.populationSize = populationSize;
     this.mutationRate = mutationRate;
@@ -14,22 +14,28 @@ export default class GeneticAlgorithmStrategy {
   }
 
   autoPlace(system) {
+    let fitnessEvolution = [];
     let population = this.initializePopulation(system);
     for (
       let generation = 0;
       generation < this.generations;
       generation++
     ) {
-      const fitness = population.map((solution) => {
-        this.evaluateFitness(solution, system);
-      });
-      const parents = this.selectParents(population, fitness);
+      const fitnesses = population.map((solution) =>
+        this.evaluateFitness(solution, system)
+      );
+      const averageFitness =
+        fitnesses.reduce((acc, curr) => acc + curr, 0) /
+        fitnesses.length;
+      const maxFitness = Math.max(...fitnesses);
+      fitnessEvolution.push(maxFitness);
+      const parents = this.selectParents(population, fitnesses);
       const children = this.crossover(parents);
       this.mutate(children);
       population = this.selectNextGeneration(
         population,
         children,
-        fitness
+        fitnesses
       );
 
       // Calculate the progress percentage
@@ -43,7 +49,10 @@ export default class GeneticAlgorithmStrategy {
         'progress-text'
       ).textContent = `${progressPercentage.toFixed(2)}%`;
     }
-    return this.getBestSolution(population, system);
+    return {
+      bestSolution: this.getBestSolution(population, system),
+      fitnessEvolution: fitnessEvolution,
+    };
   }
 
   initializePopulation(system) {
@@ -58,8 +67,7 @@ export default class GeneticAlgorithmStrategy {
   evaluateFitness(solution, system) {
     // Call the original fitness evaluation method
     let fitness = system.evaluateSolutionFitness(solution);
-
-    // Create a map to store the group sizes
+    // // Create a map to store the group sizes
     let groupSizes = {};
 
     // Iterate through the solution to calculate the group sizes
@@ -76,9 +84,9 @@ export default class GeneticAlgorithmStrategy {
       ((maxSize - minSize) / ((maxSize + minSize) / 2)) * 100;
 
     // Apply a penalty to the fitness score if the difference exceeds 15%
-    if (sizeDifference > 20) {
+    if (sizeDifference > 25) {
       // You can adjust the penalty factor as needed
-      let penaltyFactor = 0.3;
+      let penaltyFactor = 0.5;
       fitness *= penaltyFactor;
     }
     return fitness;

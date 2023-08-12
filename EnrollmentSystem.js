@@ -9,12 +9,43 @@ export default class EnrollmentSystem {
     this.draggingMember = null;
     this.preferencesType = 'memberPreferences';
     this.strategy = strategy;
+    this.fitnessEvolution = [];
   }
 
   autoPlaceMembers() {
-    const assignment = this.strategy.autoPlace(this);
-    // console.log(assignment);
-    this.applyAssignment(assignment);
+    let result = this.strategy.autoPlace(this);
+    this.fitnessEvolution = result.fitnessEvolution;
+    this.applyAssignment(result.bestSolution);
+  }
+
+  graphFitnessEvolution() {
+    if (this.fitnessEvolution.length < 1) return;
+
+    const values = this.fitnessEvolution;
+
+    let graphX = 450; // X position of the graph
+    let graphY = 650; // Y position of the graph
+
+    let minValue = 0; //Math.min(...values);
+    let maxValue = 1; //Math.max(...values);
+
+    let pixelWidth = 100 / values.length;
+
+    this.p5.stroke(0);
+    for (let i = 0; i < values.length; i++) {
+      let scaledY = this.p5.map(
+        values[i],
+        minValue,
+        maxValue,
+        100,
+        0
+      );
+      this.p5.point(graphX + i * pixelWidth, graphY + scaledY);
+    }
+
+    // Drawing the 100x100 graph outline
+    this.p5.noFill();
+    this.p5.rect(graphX, graphY, 100, 100);
   }
 
   applyAssignment(assignment) {
@@ -25,7 +56,7 @@ export default class EnrollmentSystem {
       }
     }
 
-    console.log(assignment);
+    // console.log(assignment);
     // Apply new seat assignments
     for (let assign of assignment) {
       let member = this.members.find(
@@ -277,7 +308,9 @@ export default class EnrollmentSystem {
     const membersHavingPreference = this.members.filter(
       (member) => member.preferences.length > 0
     );
-    return happyMembers.length / membersHavingPreference.length;
+    const happiness =
+      happyMembers.length / membersHavingPreference.length;
+    return happiness;
   }
 
   getAverageHappiness() {
@@ -317,7 +350,6 @@ export default class EnrollmentSystem {
 
     // Get the fitness value from the temporary copy
     const fitness = tempSystem.getSystemHappiness();
-
     return fitness;
   }
 

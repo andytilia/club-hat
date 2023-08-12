@@ -1,6 +1,7 @@
 import EnrollmentSystem from './EnrollmentSystem.js';
 import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 import GeneticAlgorithmStrategy from './GeneticAlgorithmStrategy.js';
+import SimulatedAnnealingStrategy from './SimulatedAnnealingStrategy.js';
 
 let cellWidth = 130;
 let cellHeight = 20;
@@ -28,6 +29,10 @@ const sketch = (p5) => {
     membersPerColumn =
       Math.floor((p5.windowHeight - initialY) / yOffset) - 3;
     system = new EnrollmentSystem(p5, new GeneticAlgorithmStrategy());
+    // system = new EnrollmentSystem(
+    //   p5,
+    //   new SimulatedAnnealingStrategy()
+    // );
     const numMembers = system.createMembers(
       memberData,
       membersPerColumn,
@@ -72,6 +77,7 @@ const sketch = (p5) => {
       }
     });
     system.showStats(10, 20);
+    system.graphFitnessEvolution();
   };
   p5.mousePressed = () => {
     // If a member was clicked, start dragging it
