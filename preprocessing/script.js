@@ -252,10 +252,35 @@ function useSelectedName() {
   if (selectedName !== '-- skip --') {
     currentPerson.addPreferenceByName(selectedName);
   }
+  continueAfterSelection();
+}
+
+function continueAfterSelection() {
   document.getElementById('name-selection').style.display = 'none';
   // Continue processing from the saved preference index
   currentPreferenceIndex++;
   processPreferences(currentIndex);
+}
+
+function addManualID() {
+  const manualID = document
+    .getElementById('manual-id-input')
+    .value.trim();
+  if (!manualID) {
+    logToPage('❗ Please enter an ID.');
+    return;
+  }
+  const person = people.find((p) => p.id === manualID);
+  if (person) {
+    // Assuming you have a 'currentPerson' or similar variable that represents the person whose preferences you are updating
+    currentPerson.addPreferenceById(manualID);
+    logToPage(`😊 manually matched to: ${manualID}`);
+    document.getElementById('manual-id-input').value = '';
+    continueAfterSelection();
+  } else {
+    logToPage(`❗ ID ${manualID} not found.`);
+    document.getElementById('manual-id-input').value = '';
+  }
 }
 
 function continueProcessing() {
