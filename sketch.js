@@ -88,10 +88,8 @@ const sketch = (p5) => {
   };
 
   p5.keyPressed = () => {
-    if (p5.key === 's') {
-      system.saveAssignments(membersPerColumn);
-    } else if (p5.key === 'o') {
-      system.loadAssignments();
+    if (p5.key === 'c') {
+      system.copyAssignments(membersPerColumn);
     }
   };
 
