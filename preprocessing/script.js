@@ -4,6 +4,7 @@ class Person {
     this.first = first;
     this.last = last;
     this.grade = grade;
+    this.tagString = '';
     this.preferences = [];
   }
 
@@ -13,9 +14,9 @@ class Person {
 
   getAsCsvRow() {
     const preferencesList = this.preferences.join('|');
-    return `${this.grade},${
-      this.id
-    },${this.getName()},${preferencesList}`;
+    return `${this.grade},${this.id},${this.getName()},${
+      this.tagString
+    },${preferencesList}`;
   }
 
   addPreferenceByName(name) {
@@ -177,10 +178,38 @@ function showNameSelection(name, similarNames) {
   document.getElementById('name-selection').style.display = 'block';
 }
 
+function showTagOptions() {
+  document.getElementById('tag-options').style.display = 'block';
+}
+
+function setTags() {
+  const tagValue = document.getElementById('tagString').value;
+  const recipientIds = document
+    .getElementById('tagRecipientIds')
+    .value.split(/[\s,]+/);
+  logToPage(
+    `<hr>Tag setting: ${tagValue} to ${recipientIds.join(',')}`
+  );
+  for (let id of recipientIds) {
+    const person = people.find(
+      (p) => p.id === id.trim().toLowerCase()
+    );
+    if (person) {
+      person.tagString = tagValue;
+      logToPage(`set ${person.id} tag string to ${tagValue}`);
+    } else {
+      logToPage(`can't find ${id}.`);
+    }
+  }
+  document.getElementById('tag-options').style.display = 'none';
+  logToPage('<hr>Ready to download!');
+  downloadCSV();
+}
+
 function processPreferences(index) {
   if (index >= rows.length) {
     logToPage('<hr>No more people!');
-    downloadCSV();
+    showTagOptions();
     return;
   }
   const row = rows[index];
@@ -257,7 +286,7 @@ function loadPreferences() {
 }
 
 function downloadCSV() {
-  const headers = ['grade', 'id', 'name', 'preferences'];
+  const headers = ['grade', 'id', 'name', 'tags', 'preferences'];
   const rows = people.map((person) => {
     return person.getAsCsvRow();
   });

@@ -18,9 +18,16 @@
 <div id="name-selection" style="display: none;">
   <select id="similar-names"></select>
   <button onclick="useSelectedName()">Use This Name</button>
+  <br>
+  <br>
+  <br>
 </div>
 
-
+<div id="tag-options" style="display: none;">
+    <input type="text" id="tagString" placeholder="Enter tag string..."><br>
+    <textarea id="tagRecipientIds" placeholder="Enter recipient IDs..."></textarea><br>
+    <button onclick="setTags()">Set Tags</button><br><br><br>
+</div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <script src="script.js"></script>
