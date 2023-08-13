@@ -2,6 +2,7 @@ import EnrollmentSystem from './EnrollmentSystem.js';
 import RandomAssignmentStrategy from './RandomAssignmentStrategy.js';
 import GeneticAlgorithmStrategy from './GeneticAlgorithmStrategy.js';
 import SimulatedAnnealingStrategy from './SimulatedAnnealingStrategy.js';
+import GreedyPreserveStrategy from './GreedyPreserveStrategy.js';
 
 let cellWidth = 130;
 let cellHeight = 20;
@@ -22,7 +23,8 @@ const sketch = (p5) => {
 
   p5.setup = () => {
     p5.createCanvas(2000, 2000);
-    system = new EnrollmentSystem(p5, new GeneticAlgorithmStrategy());
+    // system = new EnrollmentSystem(p5, new GeneticAlgorithmStrategy());
+    system = new EnrollmentSystem(p5, new GreedyPreserveStrategy());
   };
 
   p5.resizeCanvas(
