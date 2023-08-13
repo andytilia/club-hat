@@ -80,7 +80,12 @@ export default class EnrollmentSystem {
         seat.unassignMember();
       }
     }
-
+    // sort assignments
+    assignment.sort((a, b) => {
+      return a.memberName
+        .toLowerCase()
+        .localeCompare(b.memberName.toLowerCase());
+    });
     // console.log(assignment);
     // Apply new seat assignments
     for (let assign of assignment) {
@@ -407,19 +412,19 @@ export default class EnrollmentSystem {
     );
 
     for (let i = -1; i < maxGroupSize; i++) {
-      // New logic: Add member's name for the "Members" columns
-      for (let col = 0; col < numMemberColumns; col++) {
-        let memberIndex = i + col * membersPerColumn;
-        if (i === -1) {
-          csvAssignments += col === 0 ? `"Members",` : `"" ,`;
-        } else if (this.members[memberIndex]) {
-          csvAssignments += `"${this.members[memberIndex].name}",`;
-        } else {
-          csvAssignments += '"",';
-        }
-      }
+      // // New logic: Add member's name for the "Members" columns
+      // for (let col = 0; col < numMemberColumns; col++) {
+      //   let memberIndex = i + col * membersPerColumn;
+      //   if (i === -1) {
+      //     csvAssignments += col === 0 ? `"Members",` : `"" ,`;
+      //   } else if (this.members[memberIndex]) {
+      //     csvAssignments += `"${this.members[memberIndex].name}",`;
+      //   } else {
+      //     csvAssignments += '"",';
+      //   }
+      // }
 
-      csvAssignments += '"",'; // Blank column between members and groups
+      // csvAssignments += '"",'; // Blank column between members and groups
 
       // Existing logic: Continue with group assignments...
       for (let groupName of Object.keys(assignments)) {

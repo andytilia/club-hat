@@ -66,6 +66,7 @@ export default class Group {
         p5.fill(50, 50, 0);
       }
     }
+    console.log(`showing ${this.name} at ${this.x}, ${this.y - 5}`);
     p5.text(this.name, this.x, this.y - 5);
   }
 
@@ -88,8 +89,8 @@ export default class Group {
       system,
       data.name,
       data.seatCount,
-      data.startX,
-      data.startY,
+      data.x,
+      data.y,
       data.cellWidth,
       data.cellHeight,
       data.cellBuffer,
