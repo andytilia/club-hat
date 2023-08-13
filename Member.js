@@ -1,5 +1,5 @@
 export default class Member {
-  constructor(system, id, name, x, y, w, h, preferences) {
+  constructor(system, id, name, x, y, w, h, preferences, tags) {
     this.system = system;
     this.id = id;
     this.name = name;
@@ -14,6 +14,7 @@ export default class Member {
     this.dragging = false;
     this.rollover = false;
     this.preferences = preferences;
+    this.tags = tags;
   }
 
   startDragging() {
@@ -55,7 +56,7 @@ export default class Member {
       p5.stroke(200);
     }
 
-    p5.fill(255);
+    p5.fill(220, 240, 220);
     p5.rect(this.x, this.y, this.w, this.h);
     p5.fill(0);
     p5.noStroke();
@@ -72,10 +73,10 @@ export default class Member {
 
   showOriginal() {
     const p5 = this.system.p5;
-    p5.fill(230); // light grey
+    p5.fill(255);
     p5.noStroke();
     p5.rect(this.originalX, this.originalY, this.w, this.h);
-    p5.fill(0); // black text
+    p5.fill(100); // black text
     p5.noStroke();
     p5.textAlign(p5.LEFT, p5.CENTER);
     p5.text(
@@ -184,6 +185,7 @@ export default class Member {
       w: this.w,
       h: this.h,
       preferences: this.preferences,
+      tags: this.tags,
       // Excluded the 'system' attribute to avoid circular references
       // Also excluded UI-specific attributes like 'dragging', 'rollover', 'offsetX', and 'offsetY'
     };
@@ -199,7 +201,8 @@ export default class Member {
       data.originalY,
       data.w,
       data.h,
-      data.preferences
+      data.preferences,
+      data.tags
     );
 
     // Restore the other properties that were serialized

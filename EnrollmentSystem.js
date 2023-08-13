@@ -18,6 +18,30 @@ export default class EnrollmentSystem {
     this.applyAssignment(result.bestSolution);
   }
 
+  placeInvites() {
+    let invitedMembers = this.members.filter(
+      (member) => member.tags.trim().length > 0
+    );
+    invitedMembers.forEach((member) => {
+      let group = this.groups.find(
+        (group) =>
+          group.name.toLowerCase() ===
+          member.tags.trim().toLowerCase()
+      );
+      if (group) {
+        let availableSeat = group.seats.find(
+          (seat) => !seat.isOccupied()
+        );
+        if (availableSeat) {
+          availableSeat.assignMember(member);
+          console.log(
+            `placed invited member ${member.name} in ${group.name}`
+          );
+        }
+      }
+    });
+  }
+
   graphFitnessEvolution() {
     if (this.fitnessEvolution.length < 1) return;
 
@@ -49,6 +73,7 @@ export default class EnrollmentSystem {
   }
 
   applyAssignment(assignment) {
+    console.log('CLEARING ALL SEAT ASSIGNMENTS');
     // Clear current seat assignments
     for (let group of this.groups) {
       for (let seat of group.seats) {
@@ -89,10 +114,10 @@ export default class EnrollmentSystem {
     let initialX =
       10 + Math.ceil(numMembers / membersPerColumn) * xOffset + 50;
 
-    groups.rows.forEach((row) => {
-      let groupName = row.getString('name');
-      let groupMaxSize = row.getNum('maxSize');
-      let groupInviteOnly = row.getString('inviteOnly') === 'true';
+    groups.forEach((group) => {
+      let groupName = group.name;
+      let groupMaxSize = parseInt(group.maxSize);
+      let groupInviteOnly = group.inviteOnly === 'true';
 
       let newGroup = new Group(
         this,
@@ -109,7 +134,7 @@ export default class EnrollmentSystem {
       initialX += xOffset;
     });
 
-    return groups.rows.length;
+    return groups.length;
   }
 
   addGroup(group) {
@@ -132,10 +157,11 @@ export default class EnrollmentSystem {
     cellWidth,
     cellHeight
   ) {
-    members.rows.forEach((row, index) => {
-      let memberId = row.getString('id');
-      let memberName = row.getString('name');
-      let preferencesString = row.getString('preferences').trim();
+    members.forEach((member, index) => {
+      let memberId = member.id;
+      let memberName = member.name;
+      let memberTags = member.tags;
+      let preferencesString = member.preferences.trim();
       let preferencesList =
         preferencesString.length > 0
           ? preferencesString.split('|')
@@ -154,13 +180,14 @@ export default class EnrollmentSystem {
         y,
         cellWidth,
         cellHeight,
-        preferencesList
+        preferencesList,
+        memberTags
       );
       // console.log(newMember);
       this.addMember(newMember);
     });
 
-    return members.rows.length;
+    return members.length;
   }
 
   addMember(member) {

@@ -8,12 +8,21 @@
   </head>
 
   <body>
-    <div id="progress-container">
+    <div id="progress-container" style="display:none;">
       <progress id="progress-bar" max="100" value="0"></progress>
       <span id="progress-text">0%</span>
     </div>
-    <button id="saveSystem">Save System</button>
+    <button id="startSystem">Start System</button>
+    <button id="sortSystem" disabled>Sort System</button>
+    <button id="saveSystem" disabled>Save System</button>
 <button id="loadSystem">Load System</button>
+<div id="starterFilesControls" style="display: none;">
+<!-- Group Data File Input -->
+Groups: <input type="file" id="groupDataInput" />
+<!-- Member Data File Input -->
+People: <input type="file" id="memberDataInput" />
+<button id="loadStarterFiles">Load These Files</button>
+  </div>
 <input type="file" id="loadFile" style="display: none;">
 <div id="enroll"></div>
 

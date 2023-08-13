@@ -272,7 +272,6 @@ function addManualID() {
   }
   const person = people.find((p) => p.id === manualID);
   if (person) {
-    // Assuming you have a 'currentPerson' or similar variable that represents the person whose preferences you are updating
     currentPerson.addPreferenceById(manualID);
     logToPage(`😊 manually matched to: ${manualID}`);
     document.getElementById('manual-id-input').value = '';
