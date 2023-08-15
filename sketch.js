@@ -74,6 +74,11 @@ const sketch = (p5) => {
     if (p5.key === 'c') {
       system.copyAssignments(membersPerColumn);
     }
+    if (p5.key === 'a') {
+      document.getElementById('startSystem').style.display = 'inline';
+      document.getElementById('sortSystem').style.display = 'inline';
+      document.getElementById('saveSystem').style.display = 'inline';
+    }
   };
 
   p5.initSystem = () => {
