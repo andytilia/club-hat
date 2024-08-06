@@ -4,8 +4,8 @@ class Person {
     this.firstName = firstName;
     this.lastName = lastName;
     this.displayName = firstName + ' ' + lastName.slice(0, 1);
-    this.x = round(random(35, width - 70));
-    this.y = round(random(height - 150, height - 30));
+    this.x = round(random(width - 400, width - 70));
+    this.y = round(random(50, height - 50));
     this.w = 60;
     this.h = 20;
     this.dragging = false;
