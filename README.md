@@ -1,6 +1,6 @@
 # group hat
 
-## v2
+## v2: focused on supports for manual adjustments
 
 ### v2.2
 
@@ -10,6 +10,6 @@
 - save and load capabilities
 - needs auto-assign
 
-## v1
+## v1: focused on auto assignment algorithms
 
 - sorting algorithms
