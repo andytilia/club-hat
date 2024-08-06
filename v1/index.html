@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+
+  <body>
+    <div id="progress-container" style="display: none">
+      <progress id="progress-bar" max="100" value="0"></progress>
+      <span id="progress-text">0%</span>
+    </div>
+    <a href="preprocessing/">Preprocessing Page</a><br /><br />
+    <button id="startSystem" style="display: none">
+      Start System
+    </button>
+    <button id="sortSystem" disabled style="display: none">
+      Sort System
+    </button>
+    <button id="saveSystem" disabled style="display: none">
+      Save System
+    </button>
+    <button id="loadSystem">Load System</button>
+    <div id="starterFilesControls" style="display: none">
+      <!-- Group Data File Input -->
+      Groups: <input type="file" id="groupDataInput" />
+      <!-- Member Data File Input -->
+      People: <input type="file" id="memberDataInput" />
+      <button id="loadStarterFiles">Load These Files</button>
+    </div>
+    <input type="file" id="loadFile" style="display: none" />
+    <div id="enroll"></div>
+
+    <script type="module" src="sketch.js"></script>
+  </body>
+</html>

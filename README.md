@@ -1,7 +1,12 @@
-# group-hat
+# group hat
 
-## preprocessing
+## v2
 
-1. load csv of students in one grade
-2. load prefs of all students. (column headers should be pref1, pref2, pref3, pref4, pref5)
-3.
+- includes features to support manual adjustments
+- keeps all data local
+- save and load capabilities
+- needs auto-assign
+
+## v1
+
+- sorting algorithms
