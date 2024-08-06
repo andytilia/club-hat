@@ -1,7 +1,7 @@
 .DS_Store
 
 # All data stays local
-# *.csv
+*.csv
 
 # Logs
 logs
