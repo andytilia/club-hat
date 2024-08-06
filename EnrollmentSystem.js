@@ -163,6 +163,8 @@ export default class EnrollmentSystem {
     cellHeight
   ) {
     members.forEach((member, index) => {
+      console.log(member.id);
+      console.log(member.preferences);
       let memberId = member.id;
       let memberName = member.name;
       let memberTags = member.tags;

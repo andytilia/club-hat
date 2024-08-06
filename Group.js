@@ -66,7 +66,6 @@ export default class Group {
         p5.fill(50, 50, 0);
       }
     }
-    console.log(`showing ${this.name} at ${this.x}, ${this.y - 5}`);
     p5.text(this.name, this.x, this.y - 5);
   }
 
@@ -96,7 +95,6 @@ export default class Group {
       data.cellBuffer,
       data.inviteOnly
     );
-    console.log(group);
     group.seats = data.seats.map((seatData) => {
       console.log(seatData);
       return Seat.fromJSON(group, seatData, system.members);
