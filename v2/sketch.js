@@ -3,10 +3,10 @@ let lastTouchX, lastTouchY;
 
 function setup() {
   createCanvas(1000, 650);
-  scheme = new Scheme('8th-grade-advisory-2425');
-  loadGroupsFromPath('groups.csv');
-  loadPeopleFromPath('people.csv');
-  loadConnectionsFromPath('connections.csv');
+  scheme = new Scheme('8th-grade-advisory');
+  // loadGroupsFromPath('groups.csv');
+  // loadPeopleFromPath('people.csv');
+  // loadConnectionsFromPath('connections.csv');
 }
 
 function draw() {
