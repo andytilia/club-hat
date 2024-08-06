@@ -2,9 +2,13 @@
 
 ## v2: focused on supports for manual adjustments
 
+### v2.3
+
+- add scary admin tools
+
 ### v2.2
 
-- dev here: https://editor.p5js.org/andytilia/sketches/0HEz_wrz2
+- dev at p5js editor
 - includes features to support manual adjustments
 - keeps all data local
 - save and load capabilities
