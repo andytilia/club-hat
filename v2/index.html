@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/addons/p5.sound.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <main>
+      <!--       <input id="autoAssignButton" type="button" value="Auto Assign" onclick="handleAutoAssign();" /> -->
+
+      save scheme:
+      <input
+        id="saveButton"
+        type="button"
+        value="Click to Save"
+        onclick="saveCanvasFiles();"
+      />
+      <br />
+      load scheme:
+      <input
+        type="file"
+        id="schemeFile"
+        value="Load Scheme"
+        onchange="loadSchemeFromFile(event)"
+      />
+      <!--       <input id="clearButton" type="button" value="Start Over" onclick="clearScheme();" /> -->
+      <!--       <input type="file" id="schemeFile" onchange="loadSchemeFromFile(event)" /> -->
+      <!--  load people: -->
+      <!--       <input type="file" id="peopleFile" onchange="loadPeopleFromFile(event)" /> -->
+      <!--       <input type="file" id="groupsFile" onchange="loadGroupsFromFile(event)" /> -->
+      <!--  load connections:     <input
+        type="file"
+        id="connectionsFile"
+        onchange="loadConnectionsFromFile(event)"
+      /> -->
+    </main>
+    <script src="person.js"></script>
+    <script src="group.js"></script>
+    <script src="scheme.js"></script>
+    <script src="sketch.js"></script>
+  </body>
+</html>
