@@ -21,6 +21,54 @@ class Scheme {
     this.connections = connections;
   }
 
+  autoassign(algorithm) {
+    const unassignedPeople = this.people.filter(
+      (person) =>
+        !this.groups.some((group) => group.members.includes(person))
+    );
+
+    switch (algorithm) {
+      case 'random':
+        this.randomAssignment(unassignedPeople);
+        break;
+      case 'sequential':
+        this.sequentialAssignment(unassignedPeople);
+        break;
+      case 'balanced':
+        this.balancedAssignment(unassignedPeople);
+        break;
+      default:
+        console.error('Unknown algorithm:', algorithm);
+    }
+
+    // Recalculate happiness for all groups
+    this.groups.forEach((group) => group.recalculateHappiness());
+  }
+
+  randomAssignment(unassignedPeople) {
+    for (let person of unassignedPeople) {
+      let availableGroups = this.groups.filter((group) =>
+        group.hasAvailableSlot()
+      );
+      if (availableGroups.length > 0) {
+        let randomGroup = random(availableGroups);
+        randomGroup.addMember(
+          person,
+          randomGroup.x + 10,
+          randomGroup.y + 40
+        );
+      }
+    }
+  }
+
+  sequentialAssignment(unassignedPeople) {
+    // Implementation will be added in the next step
+  }
+
+  balancedAssignment(unassignedPeople) {
+    // Implementation will be added in the next step
+  }
+
   assignConnections() {
     this.connections.forEach((c) => {
       let primaryId = c.slice(0, 1);

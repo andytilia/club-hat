@@ -1,149 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/addons/p5.sound.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    <meta charset="utf-8" />
-    <style>
-      #adminToolsLabel {
-        color: lightgrey;
-        text-align: right;
-        display: block;
-        cursor: pointer;
-        margin-right: 10px;
-      }
-      /* The Modal (background) */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgb(0, 0, 0);
-        background-color: rgba(0, 0, 0, 0.4);
-        padding-top: 60px;
-      }
-      /* Modal Content */
-      .modal-content {
-        background-color: #fefefe;
-        margin: 5% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-      }
-      /* The Close Button */
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-      }
-      .close:hover,
-      .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-      }
-    </style>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>8th Grade Advisory Scheme</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main>
-      <!-- Save and Load Scheme Buttons -->
       <div>
-        load scheme:
+        <label for="loadScheme">Load scheme:</label>
         <input
           type="file"
-          id="schemeFile"
-          value="Load Scheme"
+          id="loadScheme"
           onchange="loadSchemeFromFile(event)"
         />
-        <br />
-        save scheme:
-        <input
-          id="saveButton"
-          type="button"
-          value="Click to Save"
-          onclick="saveCanvasFiles();"
-        />
+
+        <button onclick="saveCanvasFiles()">Save scheme</button>
+
+        <select id="algorithmSelect">
+          <option value="random">Random Assignment</option>
+          <!-- <option value="sequential">Fill Groups Sequentially</option> -->
+          <!-- <option value="balanced">Balance Group Sizes</option> -->
+        </select>
+        <button id="autoassignBtn">Autoassign</button>
       </div>
 
-      <!-- Modal Trigger -->
       <div style="text-align: right">
-        <span id="adminToolsLabel">scary admin tools</span>
+        <button id="adminToolsBtn">scary admin tools</button>
       </div>
 
-      <!-- The Modal -->
       <div id="adminToolsModal" class="modal">
         <div class="modal-content">
           <span class="close">&times;</span>
-          <input
-            id="clearButton"
-            type="button"
-            value="Start Over"
-            onclick="clearScheme();"
-          />
-          <br />
-          load people:
+          <label for="loadPeople">Load people:</label>
           <input
             type="file"
-            id="peopleFile"
+            id="loadPeople"
             onchange="loadPeopleFromFile(event)"
           />
           <br />
-          load groups:
+          <label for="loadGroups">Load groups:</label>
           <input
             type="file"
-            id="groupsFile"
+            id="loadGroups"
             onchange="loadGroupsFromFile(event)"
           />
           <br />
-          load connections:
+          <label for="loadConnections">Load connections:</label>
           <input
             type="file"
-            id="connectionsFile"
+            id="loadConnections"
             onchange="loadConnectionsFromFile(event)"
           />
           <br />
-          <br />
-          version 2.3
+          <p>version 2.3</p>
         </div>
       </div>
     </main>
-    <script src="person.js"></script>
-    <script src="group.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="scheme.js"></script>
+    <script src="group.js"></script>
+    <script src="person.js"></script>
     <script src="sketch.js"></script>
-
-    <script>
-      // Get the modal
-      var modal = document.getElementById('adminToolsModal');
-
-      // Get the button that opens the modal
-      var btn = document.getElementById('adminToolsLabel');
-
-      // Get the <span> element that closes the modal
-      var span = document.getElementsByClassName('close')[0];
-
-      // When the user clicks on the button, open the modal
-      btn.onclick = function () {
-        modal.style.display = 'block';
-      };
-
-      // When the user clicks on <span> (x), close the modal
-      span.onclick = function () {
-        modal.style.display = 'none';
-      };
-
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function (event) {
-        if (event.target == modal) {
-          modal.style.display = 'none';
-        }
-      };
-    </script>
   </body>
 </html>

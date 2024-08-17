@@ -1,12 +1,37 @@
 let scheme;
 let lastTouchX, lastTouchY;
+let algorithmSelect,
+  autoassignBtn,
+  adminToolsBtn,
+  adminToolsModal,
+  closeBtn;
 
 function setup() {
   createCanvas(1000, 650);
   scheme = new Scheme('8th-grade-advisory');
-  // loadGroupsFromPath('groups.csv');
-  // loadPeopleFromPath('people.csv');
-  // loadConnectionsFromPath('connections.csv');
+
+  algorithmSelect = select('#algorithmSelect');
+  autoassignBtn = select('#autoassignBtn');
+  autoassignBtn.mousePressed(performAutoassign);
+
+  // Add admin tools button functionality
+  adminToolsBtn = select('#adminToolsBtn');
+  adminToolsModal = select('#adminToolsModal');
+  closeBtn = select('.close');
+
+  adminToolsBtn.mousePressed(showAdminTools);
+  closeBtn.mousePressed(hideAdminTools);
+
+  // Close the modal when clicking outside of it
+  window.addEventListener('click', function (event) {
+    if (event.target == adminToolsModal.elt) {
+      hideAdminTools();
+    }
+  });
+
+  loadGroupsFromPath('test-groups.csv');
+  loadPeopleFromPath('test-people.csv');
+  loadConnectionsFromPath('test-connections.csv');
 }
 
 function draw() {
@@ -47,6 +72,14 @@ function mouseDragged() {
   if (scheme) {
     scheme.handleMove(mouseX, mouseY);
   }
+}
+
+function showAdminTools() {
+  adminToolsModal.style('display', 'block');
+}
+
+function hideAdminTools() {
+  adminToolsModal.style('display', 'none');
 }
 
 function saveCanvasFiles() {
@@ -210,8 +243,8 @@ function parseConnectionsStrings(data) {
     connections.push(parts);
   }
 
-  // console.log(`${connections.length} connection sets added`);
-  // connections.forEach((c) => console.log(c));
+  console.log(`${connections.length} connection sets added`);
+  connections.forEach((c) => console.log(c));
   scheme.setConnections(connections);
   scheme.assignConnections();
 }
@@ -220,4 +253,11 @@ function deepCopy(array) {
   return array.map((item) =>
     Array.isArray(item) ? deepCopy(item) : item
   );
+}
+
+function performAutoassign() {
+  if (scheme) {
+    let algorithm = algorithmSelect.value();
+    scheme.autoassign(algorithm);
+  }
 }
