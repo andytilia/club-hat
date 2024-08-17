@@ -2,6 +2,11 @@
 
 ## v2: focused on supports for manual adjustments
 
+### v2.4
+
+- add random autoassign for unassigned people
+- minor UI improvement to scary admin tools button
+
 ### v2.3
 
 - add scary admin tools
