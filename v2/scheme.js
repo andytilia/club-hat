@@ -249,8 +249,28 @@ class Scheme {
     ).length;
   }
 
+  updatePersonHappiness(person) {
+    let assignedGroup = this.groups.find((group) =>
+      group.members.includes(person)
+    );
+    if (assignedGroup) {
+      let connectionCount = assignedGroup.members.filter(
+        (m) => m !== null && person.connections.includes(m.id)
+      ).length;
+      person.happiness =
+        connectionCount > 0
+          ? connectionCount
+          : person.connections.length > 0
+          ? -1
+          : 0;
+    } else {
+      person.happiness = 0;
+    }
+  }
+
   validateDataQuality() {
     let errors = [];
+    let warnings = [];
 
     // Check for unique person IDs
     let personIds = new Set();
@@ -295,19 +315,25 @@ class Scheme {
       }
     }
 
-    // Check connections
+    // Check connections and remove invalid ones
     for (let person of this.people) {
+      let validConnections = [];
       for (let connId of person.connections) {
         if (!personIds.has(connId)) {
-          errors.push(
-            `Invalid connection ID for person ${person.id}: ${connId}`
+          warnings.push(
+            `Removed invalid connection ID ${connId} for person ${person.id}`
           );
-        }
-        if (connId === person.id) {
-          errors.push(
-            `Person ${person.id} is connected to themselves`
+        } else if (connId === person.id) {
+          warnings.push(
+            `Removed self-connection for person ${person.id}`
           );
+        } else {
+          validConnections.push(connId);
         }
+      }
+      if (validConnections.length !== person.connections.length) {
+        person.connections = validConnections;
+        this.updatePersonHappiness(person);
       }
     }
 
@@ -367,15 +393,20 @@ class Scheme {
       }
     }
 
-    return errors;
+    return { errors, warnings };
   }
 
   ensureDataQuality() {
-    const errors = this.validateDataQuality();
+    const { errors, warnings } = this.validateDataQuality();
+
+    if (warnings.length > 0) {
+      alert('Data quality warnings:');
+      warnings.forEach((warning) => console.warn(warning));
+    }
+
     if (errors.length > 0) {
-      alert('Data quality issues detected. see console.');
+      alert('Data quality issues detected:');
       errors.forEach((error) => console.error(error));
-      // You might want to throw an error or handle this situation in a way that fits your application
       throw new Error('Data quality check failed');
     }
   }
