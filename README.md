@@ -2,6 +2,11 @@
 
 ## v2: focused on supports for manual adjustments
 
+### v2.5
+
+- add balanced happiness autoassign
+- add 'start over' button
+
 ### v2.4
 
 - add random autoassign for unassigned people
