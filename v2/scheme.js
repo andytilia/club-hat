@@ -373,7 +373,7 @@ class Scheme {
   ensureDataQuality() {
     const errors = this.validateDataQuality();
     if (errors.length > 0) {
-      console.error('Data quality issues detected:');
+      alert('Data quality issues detected. see console.');
       errors.forEach((error) => console.error(error));
       // You might want to throw an error or handle this situation in a way that fits your application
       throw new Error('Data quality check failed');
