@@ -11,14 +11,17 @@ class Scheme {
 
   setPeople(people) {
     this.people = people;
+    this.ensureDataQuality();
   }
 
   setGroups(groups) {
     this.groups = groups;
+    this.ensureDataQuality();
   }
 
   setConnections(connections) {
     this.connections = connections;
+    this.ensureDataQuality();
   }
 
   autoassign(algorithm) {
@@ -43,6 +46,8 @@ class Scheme {
 
     // Recalculate happiness for all groups
     this.groups.forEach((group) => group.recalculateHappiness());
+
+    this.ensureDataQuality();
   }
 
   randomAssignment(unassignedPeople) {
@@ -216,6 +221,8 @@ class Scheme {
       draggedPerson.stopDragging();
       this.currentDragged = null;
     }
+
+    this.ensureDataQuality();
   }
 
   handleMove(px, py) {
@@ -240,6 +247,137 @@ class Scheme {
     return this.people.filter(
       (person) => person.connections.length > 1
     ).length;
+  }
+
+  validateDataQuality() {
+    let errors = [];
+
+    // Check for unique person IDs
+    let personIds = new Set();
+    for (let person of this.people) {
+      if (personIds.has(person.id)) {
+        errors.push(`Duplicate person ID: ${person.id}`);
+      }
+      personIds.add(person.id);
+    }
+
+    // Check for unique group titles
+    let groupTitles = new Set();
+    for (let group of this.groups) {
+      if (groupTitles.has(group.title)) {
+        errors.push(`Duplicate group title: ${group.title}`);
+      }
+      groupTitles.add(group.title);
+    }
+
+    // Check required fields and data types
+    for (let person of this.people) {
+      if (!person.id || !person.firstName || !person.lastName) {
+        errors.push(
+          `Missing required field for person: ${person.id}`
+        );
+      }
+      if (typeof person.id !== 'string') {
+        errors.push(`Invalid ID type for person: ${person.id}`);
+      }
+    }
+
+    for (let group of this.groups) {
+      if (!group.title || !group.maxSize) {
+        errors.push(
+          `Missing required field for group: ${group.title}`
+        );
+      }
+      if (!Number.isInteger(group.maxSize) || group.maxSize <= 0) {
+        errors.push(
+          `Invalid maxSize for group: ${group.title}, ${group.maxSize}`
+        );
+      }
+    }
+
+    // Check connections
+    for (let person of this.people) {
+      for (let connId of person.connections) {
+        if (!personIds.has(connId)) {
+          errors.push(
+            `Invalid connection ID for person ${person.id}: ${connId}`
+          );
+        }
+        if (connId === person.id) {
+          errors.push(
+            `Person ${person.id} is connected to themselves`
+          );
+        }
+      }
+    }
+
+    // Check group assignments
+    for (let group of this.groups) {
+      if (
+        group.members.filter((m) => m !== null).length > group.maxSize
+      ) {
+        errors.push(`Group ${group.title} exceeds maxSize`);
+      }
+      for (let member of group.members) {
+        if (member !== null && !this.people.includes(member)) {
+          errors.push(
+            `Invalid member in group ${group.title}: ${member.id}`
+          );
+        }
+      }
+    }
+
+    // Check happiness consistency
+    for (let person of this.people) {
+      let assignedGroup = this.groups.find((group) =>
+        group.members.includes(person)
+      );
+      if (assignedGroup) {
+        let expectedHappiness = assignedGroup.members.filter(
+          (m) => m !== null && person.connections.includes(m.id)
+        ).length;
+        if (
+          expectedHappiness === 0 &&
+          person.connections.length > 0
+        ) {
+          expectedHappiness = -1;
+        }
+        if (person.happiness !== expectedHappiness) {
+          errors.push(
+            `Inconsistent happiness for person ${person.id}`
+          );
+        }
+      }
+    }
+
+    // Check for people occupying the same spot in a group
+    for (let group of this.groups) {
+      let occupiedPositions = new Set();
+      for (let i = 0; i < group.members.length; i++) {
+        let member = group.members[i];
+        if (member !== null) {
+          let position = `${member.x},${member.y}`;
+          if (occupiedPositions.has(position)) {
+            errors.push(
+              `Multiple people occupy the same position in group ${group.title} at (${position})`
+            );
+          }
+          occupiedPositions.add(position);
+        }
+      }
+    }
+
+    return errors;
+  }
+
+  ensureDataQuality() {
+    const errors = this.validateDataQuality();
+    if (errors.length > 0) {
+      console.error('Data quality issues detected:');
+      errors.forEach((error) => console.error(error));
+      // You might want to throw an error or handle this situation in a way that fits your application
+      throw new Error('Data quality check failed');
+    }
   }
 
   show() {

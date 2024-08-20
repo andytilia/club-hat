@@ -1,7 +1,7 @@
 class Group {
   constructor(title, maxSize, x, y) {
     this.title = title;
-    this.maxSize = maxSize;
+    this.maxSize = parseInt(maxSize);
     this.members = this.initializeNullMembers(maxSize);
     console.log(
       `Initialized members array for ${this.title}:`,
