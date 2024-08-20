@@ -66,7 +66,80 @@ class Scheme {
   }
 
   balancedAssignment(unassignedPeople) {
-    // Implementation will be added in the next step
+    // Sort people by number of connections, descending
+    unassignedPeople.sort(
+      (a, b) => b.connections.length - a.connections.length
+    );
+    // Randomize order of people with the same number of connections
+    this.randomizeEqualConnections(unassignedPeople);
+
+    for (let person of unassignedPeople) {
+      let bestGroup = null;
+      let bestScore = -1;
+
+      // Create a randomized copy of the groups array
+      let randomizedGroups = this.shuffleArray([...this.groups]);
+
+      for (let group of randomizedGroups) {
+        if (this.canAddToGroup(group)) {
+          let score = this.calculateGroupScore(person, group);
+          if (score > bestScore) {
+            bestScore = score;
+            bestGroup = group;
+          }
+        }
+      }
+
+      if (bestGroup) {
+        bestGroup.addMember(
+          person,
+          bestGroup.x + 10,
+          bestGroup.y + 40
+        );
+      }
+    }
+  }
+
+  calculateGroupScore(person, group) {
+    return group.members.filter(
+      (member) => member && person.connections.includes(member.id)
+    ).length;
+  }
+
+  randomizeEqualConnections(people) {
+    let start = 0;
+    for (let i = 1; i <= people.length; i++) {
+      if (
+        i === people.length ||
+        people[i].connections.length !==
+          people[start].connections.length
+      ) {
+        this.shuffleArray(people, start, i);
+        start = i;
+      }
+    }
+  }
+
+  shuffleArray(array, start = 0, end = array.length) {
+    for (let i = end - 1; i > start; i--) {
+      const j = Math.floor(Math.random() * (i - start + 1)) + start;
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  canAddToGroup(group) {
+    const currentSize = group.members.filter(
+      (m) => m !== null
+    ).length;
+    const minGroupSize = Math.min(
+      ...this.groups.map(
+        (g) => g.members.filter((m) => m !== null).length
+      )
+    );
+    return (
+      currentSize < group.maxSize && currentSize < minGroupSize + 3
+    );
   }
 
   assignConnections() {

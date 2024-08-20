@@ -48,9 +48,6 @@ class Group {
       console.log(
         `Group ${this.title} is full. ${person.firstName} not added.`
       );
-      alert(
-        `Group ${this.title} is full. ${person.firstName} not added.`
-      );
       person.x = this.x + this.w - person.w / 2 + 10;
     }
     console.log(

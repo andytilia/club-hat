@@ -4,7 +4,8 @@ let algorithmSelect,
   autoassignBtn,
   adminToolsBtn,
   adminToolsModal,
-  closeBtn;
+  closeBtn,
+  startOverBtn;
 
 function setup() {
   createCanvas(1000, 650);
@@ -13,6 +14,10 @@ function setup() {
   algorithmSelect = select('#algorithmSelect');
   autoassignBtn = select('#autoassignBtn');
   autoassignBtn.mousePressed(performAutoassign);
+
+  // Add Start Over button functionality
+  startOverBtn = select('#startOverBtn');
+  startOverBtn.mousePressed(startOver);
 
   // Add admin tools button functionality
   adminToolsBtn = select('#adminToolsBtn');
@@ -259,5 +264,24 @@ function performAutoassign() {
   if (scheme) {
     let algorithm = algorithmSelect.value();
     scheme.autoassign(algorithm);
+  }
+}
+
+function startOver() {
+  if (scheme) {
+    // Remove all people from groups
+    scheme.groups.forEach((group) => {
+      group.members = group.initializeNullMembers(group.maxSize);
+    });
+
+    // Reassign random positions to people
+    scheme.people.forEach((person) => {
+      person.x = round(random(width - 400, width - 70));
+      person.y = round(random(50, height - 50));
+      person.happiness = 0;
+    });
+
+    // Recalculate happiness for all groups
+    scheme.groups.forEach((group) => group.recalculateHappiness());
   }
 }
