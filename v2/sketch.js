@@ -8,7 +8,7 @@ let algorithmSelect,
   startOverBtn;
 
 function setup() {
-  createCanvas(1000, 650);
+  createCanvas(1000, 750);
   scheme = new Scheme('8th-grade-advisory');
 
   algorithmSelect = select('#algorithmSelect');
