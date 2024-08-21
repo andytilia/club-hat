@@ -9,7 +9,7 @@ let algorithmSelect,
 
 function setup() {
   createCanvas(1000, 750);
-  scheme = new Scheme('8th-grade-advisory');
+  scheme = new Scheme('groups');
 
   algorithmSelect = select('#algorithmSelect');
   autoassignBtn = select('#autoassignBtn');
@@ -34,9 +34,9 @@ function setup() {
     }
   });
 
-  // loadGroupsFromPath('test-groups.csv');
-  // loadPeopleFromPath('test-people.csv');
-  // loadConnectionsFromPath('test-connections.csv');
+  loadGroupsFromPath('test-groups.csv');
+  loadPeopleFromPath('test-people.csv');
+  loadConnectionsFromPath('test-connections.csv');
 }
 
 function draw() {
@@ -284,4 +284,59 @@ function startOver() {
     // Recalculate happiness for all groups
     scheme.groups.forEach((group) => group.recalculateHappiness());
   }
+}
+
+function copyGroupLists() {
+  let sheetsData = generateGoogleSheetsData();
+  copyToClipboard(sheetsData);
+  alert('🤖 groups copied and ready to paste in google sheets 🎉');
+}
+
+function generateGoogleSheetsData() {
+  // Get all groups and sort them alphabetically
+  let sortedGroups = scheme.groups
+    .slice()
+    .sort((a, b) => a.title.localeCompare(b.title));
+
+  // Create header row with group names
+  let sheetsData =
+    sortedGroups.map((group) => group.title).join('\t') + '\n';
+
+  // Find the maximum number of members in any group
+  let maxMembers = Math.max(
+    ...sortedGroups.map(
+      (group) => group.members.filter((m) => m !== null).length
+    )
+  );
+
+  // Create rows for members
+  for (let i = 0; i < maxMembers; i++) {
+    let row = sortedGroups.map((group) => {
+      // Get non-null members and sort them
+      let sortedMembers = group.members
+        .filter((member) => member !== null)
+        .sort(
+          (a, b) =>
+            a.lastName.localeCompare(b.lastName) ||
+            a.firstName.localeCompare(b.firstName)
+        );
+
+      // Return the i-th member if it exists, otherwise an empty string
+      return sortedMembers[i]
+        ? `${sortedMembers[i].lastName}, ${sortedMembers[i].firstName}`
+        : '';
+    });
+    sheetsData += row.join('\t') + '\n';
+  }
+
+  return sheetsData;
+}
+
+function copyToClipboard(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
 }

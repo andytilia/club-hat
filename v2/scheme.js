@@ -529,7 +529,7 @@ class Scheme {
   }
   serialize() {
     return JSON.stringify({
-      version: '0.3',
+      version: '2.5.1',
       title: this.title,
       people: this.people.map((person) => ({
         id: person.id,
