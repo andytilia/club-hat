@@ -151,13 +151,15 @@ class Scheme {
     this.connections.forEach((c) => {
       let primaryId = c.slice(0, 1);
       let primaryPerson = this.getPersonById(primaryId)[0];
-      if (!primaryPerson)
+      if (!primaryPerson) {
         console.log(`no person found for ${primaryId}`);
-      let others = c.slice(1);
-      console.log(
-        `assigning ${others.length} connections to ${primaryPerson}`
-      );
-      primaryPerson.setConnectionIds(others);
+      } else {
+        let others = c.slice(1);
+        console.log(
+          `assigning ${others.length} connections to ${primaryPerson}`
+        );
+        primaryPerson.setConnectionIds(others);
+      }
     });
   }
 
