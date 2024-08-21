@@ -2,6 +2,10 @@
 
 ## v2: focused on supports for manual adjustments
 
+#### v2.5.1
+
+- bug fix: handle connections requested by a person not on the name list
+
 ### v2.5
 
 - add balanced happiness autoassign
