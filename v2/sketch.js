@@ -34,9 +34,9 @@ function setup() {
     }
   });
 
-  loadGroupsFromPath('test-groups.csv');
-  loadPeopleFromPath('test-people.csv');
-  loadConnectionsFromPath('test-connections.csv');
+  // loadGroupsFromPath('test-groups.csv');
+  // loadPeopleFromPath('test-people.csv');
+  // loadConnectionsFromPath('test-connections.csv');
 }
 
 function draw() {
