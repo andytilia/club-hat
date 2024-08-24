@@ -371,9 +371,8 @@ class Scheme {
           expectedHappiness = -1;
         }
         if (person.happiness !== expectedHappiness) {
-          errors.push(
-            `Inconsistent happiness for person ${person.id}`
-          );
+          this.updatePersonHappiness(person);
+          warnings.push(`Updated happiness for person ${person.id}`);
         }
       }
     }
@@ -402,12 +401,12 @@ class Scheme {
     const { errors, warnings } = this.validateDataQuality();
 
     if (warnings.length > 0) {
-      alert('Data quality warnings:');
+      console.warn('Data quality warnings. call Andy.');
       warnings.forEach((warning) => console.warn(warning));
     }
 
     if (errors.length > 0) {
-      alert('Data quality issues detected:');
+      alert('Data quality issues detected. call Andy.');
       errors.forEach((error) => console.error(error));
       throw new Error('Data quality check failed');
     }

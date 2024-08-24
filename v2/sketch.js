@@ -294,9 +294,7 @@ function copyGroupLists() {
 
 function generateGoogleSheetsData() {
   // Get all groups and sort them alphabetically
-  let sortedGroups = scheme.groups
-    .slice()
-    .sort((a, b) => a.title.localeCompare(b.title));
+  let sortedGroups = scheme.groups.slice();
 
   // Create header row with group names
   let sheetsData =
