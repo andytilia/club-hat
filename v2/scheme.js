@@ -143,7 +143,7 @@ class Scheme {
       )
     );
     return (
-      currentSize < group.maxSize && currentSize < minGroupSize + 3
+      currentSize < group.maxSize && currentSize < minGroupSize + 5
     );
   }
 
