@@ -8,7 +8,7 @@ let algorithmSelect,
   startOverBtn;
 
 function setup() {
-  createCanvas(1000, 750);
+  createCanvas(2000, 750);
   scheme = new Scheme('groups');
 
   algorithmSelect = select('#algorithmSelect');
