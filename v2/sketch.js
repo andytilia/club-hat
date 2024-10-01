@@ -22,7 +22,7 @@ function setup() {
   startOverBtn.mousePressed(startOver);
 
   loadTestDataBtn = select('#loadTestDataBtn');
-  startOverBtn.mousePressed(loadTestData);
+  loadTestDataBtn.mousePressed(loadTestData);
 
   // Add admin tools button functionality
   adminToolsBtn = select('#adminToolsBtn');
