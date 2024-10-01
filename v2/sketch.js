@@ -6,6 +6,7 @@ let algorithmSelect,
   adminToolsModal,
   closeBtn,
   startOverBtn,
+  loadTestDataBtn,
   preferenceToggleBtn;
 
 function setup() {
@@ -19,6 +20,9 @@ function setup() {
   // Add Start Over button functionality
   startOverBtn = select('#startOverBtn');
   startOverBtn.mousePressed(startOver);
+
+  loadTestDataBtn = select('#loadTestDataBtn');
+  startOverBtn.mousePressed(loadTestData);
 
   // Add admin tools button functionality
   adminToolsBtn = select('#adminToolsBtn');
@@ -36,11 +40,6 @@ function setup() {
   });
   preferenceToggleBtn = select('#preferenceToggleBtn');
   preferenceToggleBtn.mousePressed(togglePreferenceMode);
-
-  //   loadGroupsFromPath('test-groups.csv');
-  //   loadPeopleFromPath('test-people.csv');
-  //   loadConnectionsFromPath('test-connections.csv');
-  //   loadGroupPreferencesFromPath('test-group-preferences.csv');
 }
 
 function draw() {
@@ -57,6 +56,12 @@ function draw() {
   // showTasks();
 }
 
+function loadTestData() {
+  loadGroupsFromPath('test-groups.csv');
+  loadPeopleFromPath('test-people.csv');
+  //   loadConnectionsFromPath('test-connections.csv');
+  loadGroupPreferencesFromPath('test-group-preferences.csv');
+}
 function togglePreferenceMode() {
   scheme.useGroupPreferences = !scheme.useGroupPreferences;
   console.log(
