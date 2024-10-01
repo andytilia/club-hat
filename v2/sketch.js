@@ -37,10 +37,10 @@ function setup() {
   preferenceToggleBtn = select('#preferenceToggleBtn');
   preferenceToggleBtn.mousePressed(togglePreferenceMode);
 
-  loadGroupsFromPath('test-groups.csv');
-  loadPeopleFromPath('test-people.csv');
-  // loadConnectionsFromPath('test-connections.csv');
-  loadGroupPreferencesFromPath('test-group-preferences.csv');
+  //   loadGroupsFromPath('test-groups.csv');
+  //   loadPeopleFromPath('test-people.csv');
+  //   loadConnectionsFromPath('test-connections.csv');
+  //   loadGroupPreferencesFromPath('test-group-preferences.csv');
 }
 
 function draw() {
