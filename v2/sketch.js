@@ -61,6 +61,7 @@ function loadTestData() {
   loadPeopleFromPath('test-people.csv');
   //   loadConnectionsFromPath('test-connections.csv');
   loadGroupPreferencesFromPath('test-group-preferences.csv');
+  console.log('loading test data');
 }
 function togglePreferenceMode() {
   scheme.useGroupPreferences = !scheme.useGroupPreferences;
