@@ -7,7 +7,8 @@ class Scheme {
     this.currentDragged = null;
     this.currentHover = null;
     this.currentConnectionIds = [];
-    this.useGroupPreferences = false; // New property to toggle between connection and group preference modes
+    this.currentGroups = [];
+    this.useGroupPreferences = true; // New property to toggle between connection and group preference modes
   }
 
   setPeople(people) {
@@ -23,6 +24,28 @@ class Scheme {
   setConnections(connections) {
     this.connections = connections;
     this.ensureDataQuality();
+  }
+
+  setGroupPreferences(preferences) {
+    preferences.forEach((pref) => {
+      const [personId, ...groupPrefs] = pref
+        .split(',')
+        .map((item) => item.trim());
+      if (this.people.length > 0) {
+        const person = this.people.find((p) => p.id === personId);
+        if (person) {
+          person.setGroupPreferences(groupPrefs);
+        } else {
+          console.warn(
+            `Person not found for group preference: ${personId}`
+          );
+        }
+      } else {
+        console.warn(
+          `Can't set group preferences because there are no people yet!`
+        );
+      }
+    });
   }
 
   autoassign(algorithm) {
@@ -45,9 +68,7 @@ class Scheme {
         console.error('Unknown algorithm:', algorithm);
     }
 
-    // Recalculate happiness for all groups
-    this.groups.forEach((group) => group.recalculateHappiness());
-
+    this.updateAllHappiness();
     this.ensureDataQuality();
   }
 
@@ -158,7 +179,10 @@ class Scheme {
       )
     );
     return (
-      currentSize < group.maxSize && currentSize < minGroupSize + 5
+      currentSize < group.maxSize &&
+      (!this.useGroupPreferences
+        ? currentSize < minGroupSize + 5
+        : true)
     );
   }
 
@@ -198,6 +222,7 @@ class Scheme {
       if (person.isMouseOver(x, y) && this.currentDragged == null) {
         this.currentHover = person;
         this.currentConnectionIds = person.getConnectionIds();
+        this.currentGroups = person.getGroupPreferences();
         // console.log(`Hovering over ${person.toString()}`);
         break;
       }
@@ -207,6 +232,7 @@ class Scheme {
   clearHover() {
     this.currentHover = null;
     this.currentConnectionIds = [];
+    this.currentGroups = [];
   }
 
   handleRelease(px, py) {
@@ -265,26 +291,15 @@ class Scheme {
       (person) => person.connections.length > 1
     ).length;
   }
-
-  updatePersonHappiness(person) {
-    let assignedGroup = this.groups.find((group) =>
-      group.members.includes(person)
-    );
-    if (assignedGroup) {
-      let connectionCount = assignedGroup.members.filter(
-        (m) => m !== null && person.connections.includes(m.id)
-      ).length;
-      person.happiness =
-        connectionCount > 0
-          ? connectionCount
-          : person.connections.length > 0
-          ? -1
-          : 0;
-    } else {
-      person.happiness = 0;
+  updateAllHappiness() {
+    for (let group of this.groups) {
+      for (let person of group.members) {
+        if (person !== null) {
+          person.updateHappiness(group);
+        }
+      }
     }
   }
-
   validateDataQuality() {
     let errors = [];
     let warnings = [];
@@ -375,20 +390,12 @@ class Scheme {
       let assignedGroup = this.groups.find((group) =>
         group.members.includes(person)
       );
-      if (assignedGroup) {
-        let expectedHappiness = assignedGroup.members.filter(
-          (m) => m !== null && person.connections.includes(m.id)
-        ).length;
-        if (
-          expectedHappiness === 0 &&
-          person.connections.length > 0
-        ) {
-          expectedHappiness = -1;
-        }
-        if (person.happiness !== expectedHappiness) {
-          this.updatePersonHappiness(person);
-          warnings.push(`Updated happiness for person ${person.id}`);
-        }
+      let expectedHappiness =
+        person.calculateHappiness(assignedGroup);
+      if (person.happiness !== expectedHappiness) {
+        warnings.push(
+          `Happiness conflict for person ${person.id}: found ${person.happiness}, expected ${expectedHappiness}.`
+        );
       }
     }
 
@@ -435,8 +442,14 @@ class Scheme {
 
   showGroups() {
     for (let group of this.groups) {
-      fill(255);
-      stroke(0);
+      if (this.currentGroups.includes(group.title)) {
+        fill(255, 255, 40, 30);
+        stroke(255, 255, 40);
+      } else {
+        fill(255);
+        stroke(0);
+      }
+
       strokeWeight(1);
       rect(group.x, group.y, group.w, group.h);
 
@@ -493,7 +506,7 @@ class Scheme {
     if (!assignedToGroup) {
       stroke(200); // Black outline if not assigned to any group
       strokeWeight(1);
-    } else if (person.connections.length === 0) {
+    } else if (person.happiness === 0) {
       stroke(0); // Black outline if no connections
       strokeWeight(1);
     } else if (person.happiness === -1) {

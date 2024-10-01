@@ -37,10 +37,10 @@ function setup() {
   preferenceToggleBtn = select('#preferenceToggleBtn');
   preferenceToggleBtn.mousePressed(togglePreferenceMode);
 
-  // loadGroupsFromPath('test-groups.csv');
-  // loadPeopleFromPath('test-people.csv');
+  loadGroupsFromPath('test-groups.csv');
+  loadPeopleFromPath('test-people.csv');
   // loadConnectionsFromPath('test-connections.csv');
-  //   loadGroupPreferencesFromPath('test-group-preferences.csv');
+  loadGroupPreferencesFromPath('test-group-preferences.csv');
 }
 
 function draw() {
@@ -68,8 +68,7 @@ function showTasks() {
   fill(200, 50, 50);
   textSize(20);
   textAlign(LEFT, BOTTOM);
-  text('autoassign creates stacked people in groups', 30, 80);
-  text('autoassign makes some grey people in groups', 30, 110);
+  text('all looks okay');
 }
 
 function mousePressed() {

@@ -41,39 +41,37 @@ class Person {
     return this.groupPreferences;
   }
 
-  updateHappiness(group) {
-    if (group) {
-      if (this.groupPreferences.length > 0) {
-        // Calculate happiness based on group preference
-        const preferenceIndex = this.groupPreferences.indexOf(
-          group.title
-        );
-        if (preferenceIndex !== -1) {
-          this.happiness =
-            this.groupPreferences.length - preferenceIndex;
-        } else {
-          this.happiness = 0;
-        }
-      } else {
-        // Fall back to existing connection-based happiness calculation
-        let uniqueConnections = new Set(this.connections);
-        this.happiness = Array.from(uniqueConnections).filter(
-          (connId) =>
-            group.members.some(
-              (member) => member && member.id === connId
-            )
-        ).length;
-      }
-      if (
-        (this.connections.length > 0 ||
-          this.groupPreferences.length > 0) &&
-        this.happiness === 0
-      ) {
-        this.happiness = -1;
-      }
+  calculateHappiness(group) {
+    if (!group) return 0;
+
+    let happiness = 0;
+    if (this.groupPreferences.length > 0) {
+      const preferenceIndex = this.groupPreferences.indexOf(
+        group.title
+      );
+      happiness =
+        preferenceIndex !== -1
+          ? this.groupPreferences.length - preferenceIndex
+          : 0;
     } else {
-      this.happiness = 0;
+      happiness = group.members.filter(
+        (m) => m !== null && this.connections.includes(m.id)
+      ).length;
     }
+
+    if (
+      happiness === 0 &&
+      (this.connections.length > 0 ||
+        this.groupPreferences.length > 0)
+    ) {
+      happiness = -1;
+    }
+
+    return happiness;
+  }
+
+  updateHappiness(group) {
+    this.happiness = this.calculateHappiness(group);
   }
 
   startDragging(mx, my) {
