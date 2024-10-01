@@ -5,7 +5,8 @@ let algorithmSelect,
   adminToolsBtn,
   adminToolsModal,
   closeBtn,
-  startOverBtn;
+  startOverBtn,
+  preferenceToggleBtn;
 
 function setup() {
   createCanvas(2000, 750);
@@ -33,10 +34,13 @@ function setup() {
       hideAdminTools();
     }
   });
+  preferenceToggleBtn = select('#preferenceToggleBtn');
+  preferenceToggleBtn.mousePressed(togglePreferenceMode);
 
   // loadGroupsFromPath('test-groups.csv');
   // loadPeopleFromPath('test-people.csv');
   // loadConnectionsFromPath('test-connections.csv');
+  //   loadGroupPreferencesFromPath('test-group-preferences.csv');
 }
 
 function draw() {
@@ -51,6 +55,13 @@ function draw() {
   }
 
   // showTasks();
+}
+
+function togglePreferenceMode() {
+  scheme.useGroupPreferences = !scheme.useGroupPreferences;
+  console.log(
+    `Using group preferences: ${scheme.useGroupPreferences}`
+  );
 }
 
 function showTasks() {
@@ -167,6 +178,10 @@ function loadConnectionsFromPath(filePath) {
   loadStrings(filePath, parseConnectionsStrings);
 }
 
+function loadGroupPreferencesFromPath(filePath) {
+  loadStrings(filePath, parseGroupPreferencesStrings);
+}
+
 function loadPeopleFromFile(event) {
   let file = event.target.files[0];
   if (file) {
@@ -252,6 +267,34 @@ function parseConnectionsStrings(data) {
   connections.forEach((c) => console.log(c));
   scheme.setConnections(connections);
   scheme.assignConnections();
+}
+
+function loadGroupPreferencesFromFile(event) {
+  let file = event.target.files[0];
+  if (file) {
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      let content = e.target.result;
+      let lines = content.split('\n');
+      parseGroupPreferencesStrings(lines);
+    };
+    reader.readAsText(file);
+  }
+}
+
+function parseGroupPreferencesStrings(data) {
+  for (let line of data) {
+    const parts = line.split(',').map((part) => part.trim());
+    if (parts.length >= 2) {
+      const personId = parts[0];
+      const preferences = parts.slice(1);
+      const person = scheme.people.find((p) => p.id === personId);
+      if (person) {
+        person.setGroupPreferences(preferences);
+      }
+    }
+  }
+  console.log('Group preferences loaded and assigned to people');
 }
 
 function deepCopy(array) {

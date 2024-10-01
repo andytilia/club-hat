@@ -7,6 +7,7 @@ class Scheme {
     this.currentDragged = null;
     this.currentHover = null;
     this.currentConnectionIds = [];
+    this.useGroupPreferences = false; // New property to toggle between connection and group preference modes
   }
 
   setPeople(people) {
@@ -87,7 +88,12 @@ class Scheme {
 
       for (let group of randomizedGroups) {
         if (this.canAddToGroup(group)) {
-          let score = this.calculateGroupScore(person, group);
+          let score;
+          if (this.useGroupPreferences) {
+            score = this.calculateGroupPreferenceScore(person, group);
+          } else {
+            score = this.calculateGroupScore(person, group);
+          }
           if (score > bestScore) {
             bestScore = score;
             bestGroup = group;
@@ -103,6 +109,15 @@ class Scheme {
         );
       }
     }
+  }
+
+  calculateGroupPreferenceScore(person, group) {
+    const preferenceIndex = person.groupPreferences.indexOf(
+      group.title
+    );
+    return preferenceIndex === -1
+      ? 0
+      : person.groupPreferences.length - preferenceIndex;
   }
 
   calculateGroupScore(person, group) {
@@ -535,6 +550,7 @@ class Scheme {
         firstName: person.firstName,
         lastName: person.lastName,
         connections: person.connections,
+        groupPreferences: person.groupPreferences,
         happiness: person.happiness,
         x: person.x,
         y: person.y,
@@ -548,13 +564,16 @@ class Scheme {
           member ? member.id : null
         ),
       })),
+      useGroupPreferences: this.useGroupPreferences,
     });
   }
+
   static deserialize(data) {
     const obj = JSON.parse(data);
     const scheme = new Scheme(obj.title);
 
-    // Assuming you have a Person class with necessary methods
+    scheme.useGroupPreferences = obj.useGroupPreferences || false;
+
     const deserializedPeople = obj.people.map((personData) => {
       const person = new Person(
         personData.id,
@@ -564,7 +583,8 @@ class Scheme {
       person.x = personData.x;
       person.y = personData.y;
       person.happiness = personData.happiness;
-      person.connections = personData.connections;
+      person.connections = personData.connections || [];
+      person.groupPreferences = personData.groupPreferences || [];
       return person;
     });
 

@@ -10,6 +10,7 @@ class Person {
     this.h = 20;
     this.dragging = false;
     this.connections = [];
+    this.groupPreferences = [];
     this.happiness = 0;
     this.offsetX = 0;
     this.offsetY = 0;
@@ -32,16 +33,42 @@ class Person {
     return this.connections;
   }
 
+  setGroupPreferences(preferenceList) {
+    this.groupPreferences = preferenceList;
+  }
+
+  getGroupPreferences() {
+    return this.groupPreferences;
+  }
+
   updateHappiness(group) {
     if (group) {
-      let uniqueConnections = new Set(this.connections);
-      this.happiness = Array.from(uniqueConnections).filter(
-        (connId) =>
-          group.members.some(
-            (member) => member && member.id === connId
-          )
-      ).length;
-      if (this.connections.length > 0 && this.happiness === 0) {
+      if (this.groupPreferences.length > 0) {
+        // Calculate happiness based on group preference
+        const preferenceIndex = this.groupPreferences.indexOf(
+          group.title
+        );
+        if (preferenceIndex !== -1) {
+          this.happiness =
+            this.groupPreferences.length - preferenceIndex;
+        } else {
+          this.happiness = 0;
+        }
+      } else {
+        // Fall back to existing connection-based happiness calculation
+        let uniqueConnections = new Set(this.connections);
+        this.happiness = Array.from(uniqueConnections).filter(
+          (connId) =>
+            group.members.some(
+              (member) => member && member.id === connId
+            )
+        ).length;
+      }
+      if (
+        (this.connections.length > 0 ||
+          this.groupPreferences.length > 0) &&
+        this.happiness === 0
+      ) {
         this.happiness = -1;
       }
     } else {

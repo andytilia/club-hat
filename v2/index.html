@@ -12,6 +12,9 @@
   <body>
     <main>
       <div>
+        <button id="preferenceToggleBtn">
+          Toggle Preference Mode
+        </button>
         <label for="loadScheme">Load scheme:</label>
         <input
           type="file"
@@ -63,7 +66,16 @@
             onchange="loadConnectionsFromFile(event)"
           />
           <br />
-          <p>version 2.5.1</p>
+          <label for="loadGroupPreferences"
+            >Load group preferences:</label
+          >
+          <input
+            type="file"
+            id="loadGroupPreferences"
+            onchange="loadGroupPreferencesFromFile(event)"
+          />
+          <br />
+          <p>version 2.6.0</p>
         </div>
       </div>
     </main>
