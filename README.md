@@ -2,6 +2,10 @@
 
 ## v2: focused on supports for manual adjustments
 
+### 2.6
+
+- support group-based preferences for club-hat
+
 #### v2.5.1
 
 - bug fix: handle connections requested by a person not on the name list
