@@ -259,6 +259,7 @@ function parseGroupsStrings(data) {
   }
   scheme.setGroups(groups);
   console.log(`${scheme.groups.length} groups added`);
+  resizeCanvasToFitGroups();
 }
 
 function parseConnectionsStrings(data) {
@@ -385,4 +386,23 @@ function copyToClipboard(text) {
   textArea.select();
   document.execCommand('copy');
   document.body.removeChild(textArea);
+}
+
+function resizeCanvasToFitGroups() {
+  if (scheme && scheme.groups.length > 0) {
+    let maxX = 0;
+    let maxY = 0;
+
+    for (let group of scheme.groups) {
+      maxX = Math.max(maxX, group.x + group.w + 100); // Add some padding
+      maxY = Math.max(maxY, group.y + group.h + 100); // Add some padding
+    }
+
+    // Ensure a minimum width and height
+    maxX = Math.max(maxX, 2000);
+    maxY = Math.max(maxY, 750);
+
+    resizeCanvas(maxX, maxY);
+    console.log(`Canvas resized to ${maxX}x${maxY}`);
+  }
 }
