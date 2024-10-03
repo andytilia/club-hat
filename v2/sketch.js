@@ -8,6 +8,7 @@ let algorithmSelect,
   startOverBtn,
   loadTestDataBtn,
   preferenceToggleBtn;
+let rankThresholdSelect;
 
 function setup() {
   createCanvas(2000, 750);
@@ -28,6 +29,10 @@ function setup() {
   adminToolsBtn = select('#adminToolsBtn');
   adminToolsModal = select('#adminToolsModal');
   closeBtn = select('.close');
+
+  //   // Add rank threshold dropdown handling
+  //   rankThresholdSelect = select('#rankThreshold');
+  //   rankThresholdSelect.changed(updateRankThreshold);
 
   adminToolsBtn.mousePressed(showAdminTools);
   closeBtn.mousePressed(hideAdminTools);
@@ -108,6 +113,11 @@ function showAdminTools() {
 
 function hideAdminTools() {
   adminToolsModal.style('display', 'none');
+}
+
+function updateRankThreshold() {
+  let threshold = int(rankThresholdSelect.value());
+  scheme.setRankThreshold(threshold);
 }
 
 function saveCanvasFiles() {

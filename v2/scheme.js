@@ -10,6 +10,11 @@ class Scheme {
     this.highlightedGroup = null;
     this.currentGroups = [];
     this.useGroupPreferences = true;
+    this.rankThreshold = 2;
+  }
+
+  setRankThreshold(threshold) {
+    this.rankThreshold = threshold;
   }
 
   setPeople(people) {
@@ -451,9 +456,11 @@ class Scheme {
     // Update person highlighting based on preferences
     if (this.highlightedGroup) {
       for (let person of this.people) {
-        person.highlighted = person.groupPreferences.includes(
+        const rank = person.getPreferenceRank(
           this.highlightedGroup.title
         );
+        // person.highlighted =
+        //   rank !== null && rank <= this.rankThreshold;
       }
     }
   }
@@ -523,7 +530,16 @@ class Scheme {
   }
 
   showPerson(person) {
-    if (person.highlighted) {
+    let isHighlighted = false;
+    let rank = null;
+
+    // Check if there's a highlighted group and if the person ranks it as 1 or 2
+    if (this.highlightedGroup) {
+      rank = person.getPreferenceRank(this.highlightedGroup.title);
+      isHighlighted = rank !== null && rank <= this.rankThreshold;
+    }
+
+    if (isHighlighted) {
       fill(40, 40, 255, 100);
     } else if (
       this.currentHover == person ||
@@ -565,6 +581,26 @@ class Scheme {
       person.x + person.w / 2,
       person.y + person.h / 2
     );
+
+    // Display preference rank if person is highlighted
+    if (isHighlighted && rank !== null) {
+      const squareSize = 20;
+      const squareX = person.x + person.w + 2;
+      const squareY = person.y - squareSize / 2 + person.h / 2;
+
+      // Draw square behind the number
+      fill(255); // White background
+      stroke(0);
+      strokeWeight(1);
+      rect(squareX, squareY, squareSize, squareSize);
+
+      // Draw rank number
+      fill(0);
+      noStroke();
+      textAlign(CENTER, CENTER);
+      textSize(16);
+      text(rank, squareX + squareSize / 2, squareY + squareSize / 2);
+    }
   }
 
   showGroupPreferences(person) {

@@ -42,6 +42,11 @@ class Person {
     return this.groupPreferences;
   }
 
+  getPreferenceRank(groupTitle) {
+    const rank = this.groupPreferences.indexOf(groupTitle);
+    return rank !== -1 ? rank + 1 : null; // Adding 1 to make it 1-based instead of 0-based
+  }
+
   calculateHappiness(group) {
     if (!group) return 0;
 
