@@ -172,6 +172,7 @@ function loadSchemeFromFile(event) {
     reader.onload = (e) => {
       const jsonString = e.target.result;
       scheme = Scheme.deserialize(jsonString);
+      resizeCanvasToFitGroups();
       console.log('scheme file successfully read.');
     };
     reader.readAsText(file);
