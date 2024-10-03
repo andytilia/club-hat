@@ -14,6 +14,7 @@ class Person {
     this.happiness = 0;
     this.offsetX = 0;
     this.offsetY = 0;
+    this.highlighted = false;
   }
 
   isMouseOver() {

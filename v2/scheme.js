@@ -7,8 +7,9 @@ class Scheme {
     this.currentDragged = null;
     this.currentHover = null;
     this.currentConnectionIds = [];
+    this.highlightedGroup = null;
     this.currentGroups = [];
-    this.useGroupPreferences = true; // New property to toggle between connection and group preference modes
+    this.useGroupPreferences = true;
   }
 
   setPeople(people) {
@@ -434,6 +435,39 @@ class Scheme {
     }
   }
 
+  highlightGroupAndPeople(mouseX, mouseY) {
+    // Clear previous highlight
+    this.clearHighlights();
+
+    // Find group under mouse
+    for (let group of this.groups) {
+      if (group.contains(mouseX, mouseY)) {
+        group.highlighted = true;
+        this.highlightedGroup = group;
+        break;
+      }
+    }
+
+    // Update person highlighting based on preferences
+    if (this.highlightedGroup) {
+      for (let person of this.people) {
+        person.highlighted = person.groupPreferences.includes(
+          this.highlightedGroup.title
+        );
+      }
+    }
+  }
+
+  clearHighlights() {
+    if (this.highlightedGroup) {
+      this.highlightedGroup.highlighted = false;
+      this.highlightedGroup = null;
+    }
+    for (let person of this.people) {
+      person.highlighted = false;
+    }
+  }
+
   show() {
     this.showGroups();
     this.showPeople();
@@ -442,14 +476,15 @@ class Scheme {
 
   showGroups() {
     for (let group of this.groups) {
-      if (this.currentGroups.includes(group.title)) {
-        fill(255, 255, 40, 30);
-        stroke(255, 255, 40);
+      if (group.highlighted) {
+        fill(0, 0, 255, 100); // Blue highlight for space key
+      } else if (this.currentGroups.includes(group.title)) {
+        fill(255, 255, 0, 100); // Yellow highlight for currentGroups
       } else {
-        fill(255);
-        stroke(0);
+        fill(255); // White for no highlight
       }
 
+      stroke(0);
       strokeWeight(1);
       rect(group.x, group.y, group.w, group.h);
 
@@ -488,7 +523,9 @@ class Scheme {
   }
 
   showPerson(person) {
-    if (
+    if (person.highlighted) {
+      fill(40, 40, 255, 100);
+    } else if (
       this.currentHover == person ||
       this.currentDragged == person
     ) {

@@ -53,6 +53,13 @@ function draw() {
     scheme.clearHover();
   }
 
+  // highlight people who chose the group is space is pressed and nothing else.
+  if (keyIsDown(32) && !(keyIsDown(SHIFT) || mouseIsPressed)) {
+    scheme.highlightGroupAndPeople(mouseX, mouseY);
+  } else {
+    scheme.clearHighlights();
+  }
+
   // showTasks();
 }
 

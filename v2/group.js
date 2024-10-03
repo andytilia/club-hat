@@ -11,6 +11,7 @@ class Group {
     this.y = y;
     this.w = 80;
     this.h = 40 + maxSize * 40;
+    this.highlighted = false;
   }
 
   initializeNullMembers(maxSize) {
