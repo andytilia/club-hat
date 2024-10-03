@@ -529,6 +529,7 @@ class Scheme {
       this.currentHover == person ||
       this.currentDragged == person
     ) {
+      this.showGroupPreferences(person);
       fill(210, 210, 40, 100);
     } else if (this.currentConnectionIds.includes(person.id)) {
       fill(255, 255, 40, 100);
@@ -564,6 +565,33 @@ class Scheme {
       person.x + person.w / 2,
       person.y + person.h / 2
     );
+  }
+
+  showGroupPreferences(person) {
+    for (let group of this.groups) {
+      let preferenceNumber = this.getPreferenceNumber(person, group);
+      if (preferenceNumber > 0) {
+        let x = group.x + group.w / 2;
+        let y = group.y - 15;
+
+        // Draw a small square behind the number
+        fill(255);
+        stroke(0);
+        let squareSize = 20;
+        rect(x - squareSize / 2, y, squareSize, squareSize);
+
+        // Draw the preference number
+        fill(0);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        textSize(14);
+        text(preferenceNumber, x, y + squareSize / 2);
+      }
+    }
+  }
+
+  getPreferenceNumber(person, group) {
+    return person.groupPreferences.indexOf(group.title) + 1;
   }
 
   showStatistics() {
