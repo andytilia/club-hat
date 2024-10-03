@@ -12,9 +12,6 @@
   <body>
     <main>
       <div>
-        <button id="preferenceToggleBtn">
-          Toggle Preference Mode
-        </button>
         <label for="loadScheme">Load scheme:</label>
         <input
           type="file"
@@ -22,18 +19,14 @@
           onchange="loadSchemeFromFile(event)"
         />
 
-        <button onclick="saveCanvasFiles()">Save file & image</button>
+        <button onclick="saveCanvasFiles()">
+          Save scheme & screenshot
+        </button>
         <button onclick="copyGroupLists()">
           Copy for spreadsheet
         </button>
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <select id="algorithmSelect">
-          <option value="random">Random Assignment</option>
-          <!-- <option value="sequential">Fill Groups Sequentially</option> -->
-          <option value="balanced">Balanced Happiness</option>
-        </select>
-        <button id="autoassignBtn">Autoassign</button>
       </div>
 
       <div style="text-align: right">
@@ -77,6 +70,17 @@
             onchange="loadGroupPreferencesFromFile(event)"
           />
           <br />
+          <button id="preferenceToggleBtn">
+            Toggle Preference Mode
+          </button>
+          <br />
+          <select id="algorithmSelect">
+            <option value="random">Random Assignment</option>
+            <!-- <option value="sequential">Fill Groups Sequentially</option> -->
+            <option value="balanced">Balanced Happiness</option>
+          </select>
+          <button id="autoassignBtn">Autoassign</button>
+
           <p>version 2.6.0</p>
         </div>
       </div>
