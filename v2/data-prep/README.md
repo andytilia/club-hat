@@ -33,7 +33,7 @@ The `matchEmails` function is designed to match names from one Google Sheets tab
 ### Postprocessing
 
 1. copy/paste email for unmatched names
-2. create 'export names' list (no header, cols= email, first-or-pref, last)
+2. create 'export names' list (no header, cols= email, last, first-or-pref)
 3. create 'export connections' list (no header, cols = email of respondent, 0+ emails of requests)
 4. for both of those export lists: file > download > csv
 
