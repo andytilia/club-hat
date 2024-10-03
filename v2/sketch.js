@@ -54,7 +54,7 @@ function draw() {
   }
 
   // highlight people who chose the group is space is pressed and nothing else.
-  if (keyIsDown(32) && !(keyIsDown(SHIFT) || mouseIsPressed)) {
+  if (keyIsDown(CONTROL) && !(keyIsDown(SHIFT) || mouseIsPressed)) {
     scheme.highlightGroupAndPeople(mouseX, mouseY);
   } else {
     scheme.clearHighlights();
