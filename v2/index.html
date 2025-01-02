@@ -8,43 +8,47 @@
     />
     <title>Group Hat</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ccc;
+      }
+      .top-bar div {
+        display: flex;
+        align-items: center;
+      }
+      .top-bar label {
+        margin-right: 10px;
+      }
+      .top-bar button {
+        margin-left: 10px;
+      }
+    </style>
   </head>
   <body>
     <main>
-      <div>
-        <label for="loadScheme">Load scheme:</label>
-        <input
-          type="file"
-          id="loadScheme"
-          onchange="loadSchemeFromFile(event)"
-        />
-        <!-- <label for="rankThreshold">Highlight up to rank:</label>
-        <select id="rankThreshold">
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-        </select> -->
-        <br />
-        Save often -->
-        <button onclick="saveCanvasFiles()">
-          Save scheme & screenshot
-        </button>
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHIFT =
-        see a person's requests
-
-        <br />
-        Copy/paste -->
-        <button onclick="copyGroupLists()">
-          Copy for google sheets
-        </button>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        CONTROL = see who requested a club
-      </div>
-
-      <div style="text-align: right">
-        <button id="adminToolsBtn">scary admin tools</button>
+      <div class="top-bar">
+        <div>
+          <label for="loadScheme">Load scheme:</label>
+          <input
+            type="file"
+            id="loadScheme"
+            onchange="loadSchemeFromFile(event)"
+          />
+          <button onclick="saveCanvasFiles()">
+            Save scheme & screenshot
+          </button>
+          <button onclick="copyGroupLists()">
+            Copy for google sheets
+          </button>
+        </div>
+        <div>
+          <button id="adminToolsBtn">scary admin tools</button>
+        </div>
       </div>
 
       <div id="adminToolsModal" class="modal">
