@@ -2,15 +2,19 @@
 
 ## v2: focused on supports for manual adjustments
 
-### 2.6
+### 2.6.1
+
+- tidy navbar
+
+### 2.6.0
 
 - support group-based preferences for club-hat
 
-#### v2.5.1
+### v2.5.1
 
 - bug fix: handle connections requested by a person not on the name list
 
-### v2.5
+### v2.5.0
 
 - add balanced happiness autoassign
 - add 'start over' button
