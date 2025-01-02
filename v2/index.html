@@ -65,6 +65,7 @@
           <input
             type="file"
             id="loadGroups"
+            aria-label="Load groups"
             onchange="loadGroupsFromFile(event)"
           />
           <br />
@@ -72,6 +73,7 @@
           <input
             type="file"
             id="loadConnections"
+            aria-label="Load connections"
             onchange="loadConnectionsFromFile(event)"
           />
           <br />
@@ -81,19 +83,25 @@
           <input
             type="file"
             id="loadGroupPreferences"
+            aria-label="Load group preferences"
             onchange="loadGroupPreferencesFromFile(event)"
           />
           <br />
-          <button id="preferenceToggleBtn">
+          <button
+            id="preferenceToggleBtn"
+            aria-label="Toggle Preference Mode"
+          >
             Toggle Preference Mode
           </button>
           <br />
-          <select id="algorithmSelect">
+          <select id="algorithmSelect" aria-label="Select Algorithm">
             <option value="random">Random Assignment</option>
             <!-- <option value="sequential">Fill Groups Sequentially</option> -->
             <option value="balanced">Balanced Happiness</option>
           </select>
-          <button id="autoassignBtn">Autoassign</button>
+          <button id="autoassignBtn" aria-label="Autoassign">
+            Autoassign
+          </button>
 
           <p>version 2.6.0</p>
         </div>
