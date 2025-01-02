@@ -10,6 +10,8 @@ let algorithmSelect,
   preferenceToggleBtn;
 let rankThresholdSelect;
 
+console.log('sketch.js loaded');
+
 function setup() {
   createCanvas(2000, 750);
   scheme = new Scheme('groups');
@@ -354,9 +356,19 @@ function startOver() {
 }
 
 function copyGroupLists() {
+  console.log('copyGroupLists function called');
   let sheetsData = generateGoogleSheetsData();
+  console.log('Generated sheets data:', sheetsData);
   copyToClipboard(sheetsData);
-  alert('🤖 groups copied and ready to paste in google sheets 🎉');
+  console.log('Data copied to clipboard');
+
+  // Tell user that the data has been copied to clipboard
+  let message = 'Group lists copied to clipboard';
+  let messageElement = createP(message);
+  messageElement.position(10, 10);
+  messageElement.style('color', 'green');
+  messageElement.style('font-size', '18px');
+  setTimeout(() => messageElement.remove(), 3000);
 }
 
 function generateGoogleSheetsData() {
